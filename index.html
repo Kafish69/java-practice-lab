@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Java T1 Practice Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f5f2;--card:#ffffff;--ink:#1d1d1f;--muted:#6b6b70;--line:#e3e1dc;
+  --accent:#e2601f;--accent-soft:#fdeee5;--good:#1f8a4c;--good-soft:#e5f4ea;--bad:#c23b3b;--bad-soft:#fbe9e9;
+  --code-bg:#1e1f24;--code-ink:#e8e6e3;
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#141416;--card:#1c1c20;--ink:#ecebe8;--muted:#9a9aa0;--line:#2c2c32;--accent:#f0803f;--accent-soft:#33241b;--good:#4cc17e;--good-soft:#173022;--bad:#ef6b6b;--bad-soft:#371c1c;--code-bg:#0f1013;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.wrap{max-width:880px;margin:0 auto;padding:0 18px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0 8px}
+.brand{font-weight:700;font-size:18px;letter-spacing:-.01em}
+.brand span{color:var(--accent)}
+.sub{color:var(--muted);font-size:13px}
+nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px}
+nav button{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:500 14px Inter,sans-serif;cursor:pointer}
+nav button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+main{padding:22px 0 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+h2{font-size:22px;margin:0 0 4px;letter-spacing:-.01em}
+h3{font-size:17px;margin:0 0 10px}
+p.lead{color:var(--muted);margin:0 0 16px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;background:var(--accent);color:#fff;padding:10px 16px;border-radius:10px;font:600 14px Inter,sans-serif;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:default}
+select{padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:500 14px Inter,sans-serif}
+.tag{display:inline-block;font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:6px;margin-bottom:8px}
+pre,code,textarea{font-family:"JetBrains Mono",ui-monospace,monospace}
+pre{background:var(--code-bg);color:var(--code-ink);padding:12px 14px;border-radius:10px;overflow-x:auto;font-size:13.5px;line-height:1.5;margin:8px 0}
+code{background:var(--accent-soft);padding:1px 5px;border-radius:5px;font-size:.92em}
+pre code{background:none;padding:0}
+.opts{display:grid;gap:8px;margin-top:10px}
+.opt{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:11px 14px;border-radius:10px;font:15px Inter,sans-serif;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.right{background:var(--good-soft);border-color:var(--good)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.opt code{background:transparent}
+.why{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--bg);font-size:14.5px}
+.why b.ok{color:var(--good)} .why b.no{color:var(--bad)}
+input.blank{font:15px "JetBrains Mono",monospace;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);width:220px}
+input.blank.ok{border-color:var(--good);background:var(--good-soft)} input.blank.no{border-color:var(--bad);background:var(--bad-soft)}
+.progress{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin:6px 0 14px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.score{font-size:40px;font-weight:700;letter-spacing:-.02em}
+.flash{perspective:1200px;cursor:pointer;user-select:none}
+.flash .inner{position:relative;min-height:230px;transition:transform .45s;transform-style:preserve-3d}
+.flash.flip .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:26px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;font-size:19px;font-weight:500}
+.face.back{transform:rotateY(180deg);font-size:16.5px;font-weight:400;background:var(--accent-soft)}
+.face small{position:absolute;top:12px;left:16px;font-size:12px;color:var(--muted);font-weight:600}
+.face pre{text-align:left;font-size:13px;width:100%}
+textarea.editor{width:100%;min-height:340px;resize:vertical;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--line);border-radius:10px;padding:14px;font-size:13.5px;line-height:1.55;tab-size:4;outline:none}
+textarea.editor:focus{border-color:var(--accent)}
+ul.checks{list-style:none;padding:0;margin:10px 0 0}
+ul.checks li{padding:6px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+ul.checks li:last-child{border:0}
+.pill{display:inline-block;width:20px;font-weight:700}
+.muted{color:var(--muted)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.tile{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--card);cursor:pointer;text-align:left;color:var(--ink);font:inherit}
+.tile:hover{border-color:var(--accent)}
+.tile b{display:block;font-size:16px;margin-bottom:2px}
+.tile span{color:var(--muted);font-size:14px}
+.timer{font:600 15px "JetBrains Mono",monospace;color:var(--accent)}
+.hidden{display:none}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:30px 0}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div><div class="brand">Java T1 <span>Practice Lab</span></div><div class="sub">Programming Fundamentals · KdG · M1–M5</div></div>
+    </div>
+    <nav id="nav">
+      <button data-v="home" class="on">Home</button>
+      <button data-v="mock">Mock test</button>
+      <button data-v="mcq">Quiz</button>
+      <button data-v="blanks">Fill in the blanks</button>
+      <button data-v="flash">Flashcards</button>
+      <button data-v="code">Code practice</button>
+    </nav>
+  </div>
+</header>
+<main class="wrap" id="app"></main>
+<footer>Made from the Programming Fundamentals slides, exercises and official solutions. Good luck on the exam.</footer>
+
+<script>
+/* ================= DATA ================= */
+const TOPICS = ["All","M1 Basics","M2 Variables & operators","M3 Flow control","M4 Objects & Strings","M5 Classes"];
+
+const MCQ = [
+// M1
+{t:1,q:"What does <code>javac</code> produce from <code>Hello.java</code>?",o:["<code>Hello.exe</code> machine code","<code>Hello.class</code> bytecode","Another .java file","Nothing, it runs the program"],a:1,w:"The compiler turns source code into bytecode (.class). The JVM then runs that bytecode."},
+{t:1,q:"Which part of the Java platform actually runs bytecode?",o:["JDK","IDE","JVM","API"],a:2,w:"The Java Virtual Machine (JVM) is the 'software processor' that runs .class files."},
+{t:1,q:"You only want to RUN Java programs, not write them. What is the minimum you need?",o:["JDK","JRE","IntelliJ","javac"],a:1,w:"JRE = JVM + Java libraries. Enough to run. The JDK adds tools like the compiler, needed to develop."},
+{t:1,q:"Why is Java called platform independent?",o:["It is compiled straight to Intel code","Bytecode runs on any computer that has a JVM","It only runs on Windows","It has no compiler"],a:1,w:"Compile once to bytecode; every platform has its own JVM to run it."},
+{t:1,q:"Which is a disadvantage of an INTERPRETED language like Python?",o:["Source code is hidden","It is platform dependent","Slower, translated every time it runs","Needs recompiling for each processor"],a:2,w:"Interpreted code is translated on every run, so it is slower and has no compile-time checks."},
+// M2
+{t:2,q:"What is printed?",c:"System.out.println(7 / 2);",o:["3.5","3","4","3.0"],a:1,w:"int / int = int. The decimals are thrown away, not rounded."},
+{t:2,q:"What is printed?",c:"System.out.println(7 / 2.0);",o:["3","3.5","4","Compile error"],a:1,w:"One side is a double, so the whole division is done in double."},
+{t:2,q:"What is printed?",c:"int a = 10, b = 3;\nSystem.out.println((double) a / b);",o:["3","3.0","3.3333333333333335","Compile error"],a:2,w:"The cast happens first: 10.0 / 3 is a double division."},
+{t:2,q:"What is the value of <code>x</code>?",c:"int x = (int) 9.99;",o:["10","9","9.99","Compile error"],a:1,w:"Casting to int CUTS the decimals. It does not round."},
+{t:2,q:"What is <code>17 % 5</code>?",o:["3","2","3.4","5"],a:1,w:"17 = 3 × 5 + 2. The remainder is 2."},
+{t:2,q:"What are <code>y</code> and <code>x</code> afterwards?",c:"int x = 5;\nint y = x++;",o:["y = 6, x = 6","y = 5, x = 6","y = 5, x = 5","y = 6, x = 5"],a:1,w:"Post-increment: FIRST use the old value (5), THEN add 1 to x."},
+{t:2,q:"What are <code>y</code> and <code>x</code> afterwards?",c:"int x = 5;\nint y = ++x;",o:["y = 6, x = 6","y = 5, x = 6","y = 5, x = 5","y = 6, x = 5"],a:0,w:"Pre-increment: FIRST add 1, THEN use the new value."},
+{t:2,q:"What is printed?",c:"System.out.println(\"Sum: \" + 2 + 3);",o:["Sum: 5","Sum: 23","Sum: 2 3","Compile error"],a:1,w:"Left to right: \"Sum: \" + 2 is a String, then + 3 glues on. Use brackets: \"Sum: \" + (2 + 3)."},
+{t:2,q:"What is printed?",c:"System.out.println(3 + 7 + \" hi \" + 3 + 7);",o:["10 hi 10","37 hi 37","10 hi 37","3 7 hi 3 7"],a:2,w:"3 + 7 are added first (both numbers). After the String appears, everything is glued as text."},
+{t:2,q:"Which variable name is NOT allowed?",o:["firstName","_count","1number","$price"],a:2,w:"A name may not start with a digit."},
+{t:2,q:"What happens?",c:"final int MAX = 10;\nMAX = 20;",o:["MAX becomes 20","Compile error","Runtime error","MAX stays 10, no error"],a:1,w:"A final variable can't be changed after it is set. The compiler refuses."},
+{t:2,q:"What is the result?",c:"int a = 2_000_000_000;\nint b = 2_000_000_000;\nint sum = a + b;",o:["4000000000","A negative number","Compile error","0"],a:1,w:"The sum is too big for int and overflows to a negative number. Fix: long sum = (long) a + b;"},
+{t:2,q:"Which line does NOT compile?",o:["double d = 5;","long l = 5;","int i = 5L;","float f = 5;"],a:2,w:"5L is a long. Putting a long in an int needs a cast: (int) 5L."},
+{t:2,q:"When is <code>a && b</code> true?",o:["When a is true","When at least one is true","Only when both are true","When both are false"],a:2,w:"&& = AND: both must be true. || = OR: at least one."},
+{t:2,q:"Given <code>int a = 1, b = 2;</code> which is true?",o:["(a > 1) && (b > 1)","!(a == 1)","(b != 1) || (a != 1)","b - 2 * a > 0"],a:2,w:"b != 1 is true, so the || is true. b - 2*a is 0, not > 0."},
+{t:2,q:"What does the ternary expression give?",c:"double bmi = 27;\nString s = bmi > 25 ? \"too high\" : \"ok\";",o:["\"ok\"","\"too high\"","true","Compile error"],a:1,w:"condition ? valueIfTrue : valueIfFalse. 27 > 25 is true."},
+// M3
+{t:3,q:"Which loop always runs its body at least once?",o:["for","while","do-while","None"],a:2,w:"do-while tests AFTER the body, so it runs once before the first check."},
+{t:3,q:"How many times does this print?",c:"for (int i = 0; i < 5; i++) {\n    System.out.println(i);\n}",o:["4","5","6","Forever"],a:1,w:"i = 0,1,2,3,4 → 5 times."},
+{t:3,q:"What is printed?",c:"int counter = 0;\nwhile (++counter < 10) {\n    if (counter % 3 == 0) continue;\n    System.out.print(counter + \" \");\n}",o:["1 2 3 4 5 6 7 8 9","1 2 4 5 7 8","3 6 9","1 2"],a:1,w:"continue skips the print for 3, 6 and 9."},
+{t:3,q:"In an OLD-style switch, what happens if you forget <code>break</code>?",o:["Compile error","Only that case runs","It falls through into the next case","The default runs"],a:2,w:"Without break, execution continues into the next case: fall through."},
+{t:3,q:"Why does this NOT compile?",c:"int days = switch (month) {\n    case 4, 6, 9, 11 -> 30;\n    case 2 -> 28;\n};",o:["Missing break","Missing default","Arrows not allowed","Missing yield"],a:1,w:"A switch EXPRESSION must always give a value, so default is required unless every value is covered."},
+{t:3,q:"What is wrong here?",c:"if (true) {\n    int x = 5;\n}\nSystem.out.println(x);",o:["Nothing","x is out of scope: compile error","Prints 0","Prints 5"],a:1,w:"A variable only lives inside the { } where it was declared."},
+{t:3,q:"Which keyword returns a value from a block inside a switch expression?",o:["return","break","yield","continue"],a:2,w:"default -> { ...; yield \"invalid\"; }"},
+{t:3,q:"Which is the correct leap-year test?",o:["y % 4 == 0","y % 4 == 0 && y % 100 != 0 || y % 400 == 0","y % 100 == 0","y % 400 != 0"],a:1,w:"Multiple of 4 but not of 100, OR a multiple of 400."},
+{t:3,q:"What is an expression?",o:["Any line ending in ;","Code that evaluates to a single value","A group of statements in { }","A method"],a:1,w:"Expression = one value (15 * b + c, a < 120). Statement = one instruction. Block = { }."},
+{t:3,q:"What does this print?",c:"int product = 10;\nwhile (product <= 100) {\n    product = product * 3;\n}\nSystem.out.println(product);",o:["90","100","270","30"],a:2,w:"10 → 30 → 90 → 270. 270 > 100 so the loop stops."},
+{t:3,q:"A method declared as <code>public static void show()</code>…",o:["returns an int","returns nothing","must return a String","cannot be called"],a:1,w:"void means it gives no value back."},
+// M4
+{t:4,q:"What is printed?",c:"String s = \"abc\";\ns.toUpperCase();\nSystem.out.println(s);",o:["ABC","abc","Abc","Compile error"],a:1,w:"Strings are immutable. toUpperCase() returns a NEW String, which is thrown away here."},
+{t:4,q:"How do you correctly check if <code>answer</code> is \"yes\"?",o:["answer == \"yes\"","answer.equals(\"yes\")","answer = \"yes\"","answer.compare(\"yes\")"],a:1,w:"Never compare Strings with ==. It compares references, not text."},
+{t:4,q:"What is printed?",c:"String one = \"abc\";\nString three = new String(\"abc\");\nSystem.out.println(one == three);",o:["true","false","abc","Compile error"],a:1,w:"new String creates a different object. == compares references → false. one.equals(three) is true."},
+{t:4,q:"What is <code>\"Hello\".charAt(1)</code>?",o:["'H'","'e'","'l'","\"e\""],a:1,w:"Positions start at 0. Position 1 is 'e'."},
+{t:4,q:"What is <code>\"Hello\".substring(1, 3)</code>?",o:["\"ell\"","\"el\"","\"He\"","\"llo\""],a:1,w:"From index 1 up to, NOT including, 3."},
+{t:4,q:"<code>\"Mary\".compareTo(\"John\")</code> gives…",o:["a negative number","0","a positive number","true"],a:2,w:"Mary comes after John alphabetically → positive."},
+{t:4,q:"What range does <code>r.nextInt(6)</code> give?",o:["1 to 6","0 to 6","0 to 5","1 to 5"],a:2,w:"The bound is excluded. For a die use r.nextInt(6) + 1."},
+{t:4,q:"Two objects <code>new Random(42)</code> are used to generate numbers. What happens?",o:["Different numbers each","Both give the same sequence","Compile error","Only 42 is generated"],a:1,w:"Same seed = same pseudo-random sequence."},
+{t:4,q:"The user types 19, Enter. Then <code>nextLine()</code> is called. What does it return?",c:"int age = keyboard.nextInt();\nString name = keyboard.nextLine();",o:["The name","\"19\"","An empty String \"\"","An error"],a:2,w:"The leftover Enter is read. Fix: call keyboard.nextLine(); once after nextInt()."},
+{t:4,q:"What is the big difference between String and StringBuilder?",o:["StringBuilder is immutable","StringBuilder can be changed (mutable)","String has no methods","StringBuilder needs no new"],a:1,w:"StringBuilder can append, insert, reverse without creating new objects."},
+{t:4,q:"Which range does <code>r.nextInt(101) + 900</code> give?",o:["900 to 1000","900 to 1001","0 to 1000","901 to 1000"],a:0,w:"nextInt(101) = 0..100, + 900 = 900..1000. Formula: nextInt(max - min + 1) + min."},
+{t:4,q:"What prints?",c:"Player p1 = new Player(\"hunter\", 3);\nPlayer p2 = p1;\np1.extraLife();\nSystem.out.println(p2.getLives());",o:["3","4","0","Compile error"],a:1,w:"p2 = p1 copies the REFERENCE. Both point to the same object."},
+{t:4,q:"When is an object removed by garbage collection?",o:["Immediately after use","When no variable refers to it anymore","Never","When you call delete()"],a:1,w:"Automatic, but not immediate, once no references are left."},
+{t:4,q:"Which format specifier is for a String?",o:["%d","%s","%c","%f"],a:1,w:"%d int · %f decimal · %s String · %c char · %b boolean · %n new line."},
+{t:4,q:"Which class does NOT need an import?",o:["Scanner","Random","String","LocalDate"],a:2,w:"String is in java.lang, imported automatically."},
+// M5
+{t:5,q:"What is the relationship between a class and an object?",o:["They are the same","An object is an instance of a class","A class is an instance of an object","A class is a method"],a:1,w:"Class = blueprint. Object = one real thing built from it."},
+{t:5,q:"Default value of an <code>int</code> attribute?",o:["null","0","undefined","Compile error"],a:1,w:"Attributes get defaults: 0, 0.0, false, '\\u0000', null. Local variables do not."},
+{t:5,q:"Default value of a <code>String</code> attribute?",o:["\"\"","null","\"null\"","0"],a:1,w:"Any object attribute defaults to null."},
+{t:5,q:"What is the return type of a constructor?",o:["void","The class name","It has none","Object"],a:2,w:"A constructor has no return type, not even void."},
+{t:5,q:"Point only has <code>Point(int x, int y)</code>. What does <code>new Point()</code> do?",o:["Makes (0,0)","Compile error","Makes null","Runtime error"],a:1,w:"Once you write any constructor, Java no longer creates the default one."},
+{t:5,q:"Where must <code>this(...)</code> be inside a constructor?",o:["Anywhere","The last line","The first line","Only in main"],a:2,w:"Calling another constructor must be the very first statement."},
+{t:5,q:"What makes two methods overloaded?",o:["Different return types","Same name, different parameter list","Different names","One is static"],a:1,w:"The signature = name + parameter types. The return type does not count."},
+{t:5,q:"Which version is called: <code>max(1, 3, 2L)</code>, if there is an int, a long and a double version?",o:["int","long","double","Compile error"],a:1,w:"Java picks the version for the biggest type among the arguments."},
+{t:5,q:"A <code>private</code> attribute can be used…",o:["everywhere","in the same package","only inside its own class","in subclasses only"],a:2,w:"private = only the class itself. That is encapsulation."},
+{t:5,q:"Why should a constructor call the setter instead of <code>this.radius = radius</code>?",o:["It is faster","So the validation in the setter also runs","It is required by Java","To return a value"],a:1,w:"Otherwise new Circle(-5) slips invalid data in."},
+{t:5,q:"What does <code>println(obj)</code> show if the class has NO toString?",o:["Nothing","ClassName@hashcode","All attributes","Compile error"],a:1,w:"The default toString gives something like Dummy@190d11."},
+{t:5,q:"What is <code>Math.pow(2, 3)</code>?",o:["6","8","8.0","9.0"],a:2,w:"Math.pow returns a double: 8.0."},
+{t:5,q:"Why does this NOT compile? (<code>setWidth</code> is void)",c:"int w = rect.setWidth(5);",o:["setWidth is private","A void method gives no value to assign","Missing this","5 is not an int"],a:1,w:"A void call is not an expression. Call it on its own line."},
+{t:5,q:"What does this setter do wrong?",c:"public void setWidth(int width) {\n    width = width;\n}",o:["Nothing","Missing this. so the attribute never changes","Should return int","Must be private"],a:1,w:"Without this., the parameter is assigned to itself. Write this.width = width;"},
+{t:5,q:"Inside Player, can <code>play(Player other)</code> read <code>other.winRatio</code> (a private attribute)?",o:["Yes, private is per class, not per object","No, never","Only with a getter","Only if static"],a:0,w:"private means 'only code in this class'. Any Player method may read another Player's private fields."},
+{t:5,q:"Quiz: what is printed?",c:"public class Quiz {\n    private int number = 42;\n    public Quiz() { this(7); }\n    public Quiz(int n) { this.number = n; }\n    public int getNumber() { return number; }\n}\n// main:\nSystem.out.println(new Quiz().getNumber());",o:["42","7","0","Compile error"],a:1,w:"new Quiz() calls this(7), which sets number to 7."}
+];
+
+const BLANKS = [
+{t:1,q:"The ____ runs Java bytecode.",a:["jvm"]},
+{t:1,q:"Compiled Java files have the extension ____ .",a:[".class","class"]},
+{t:1,q:"To read a whole line of text: <code>keyboard.____()</code>",a:["nextline"]},
+{t:1,q:"To use Scanner you write: <code>import java.util.____;</code>",a:["scanner"]},
+{t:2,q:"The keyword that makes a variable a constant: ____",a:["final"]},
+{t:2,q:"The remainder operator is ____",a:["%"]},
+{t:2,q:"Last digit of <code>n</code>: <code>n ____ 10</code>",a:["%"]},
+{t:2,q:"Remove the last digit of <code>n</code>: <code>n ____ 10</code>",a:["/"]},
+{t:2,q:"Cast a double <code>d</code> to an int: <code>int x = ____ d;</code>",a:["(int)"]},
+{t:2,q:"Even check: <code>n % 2 ____ 0</code>",a:["=="]},
+{t:2,q:"A long literal ends with the letter ____",a:["l"]},
+{t:2,q:"Variables are written in ____Case (like firstName).",a:["camel"]},
+{t:3,q:"Leap year: <code>(y % 4 == 0 && y % 100 != 0) ____ y % 400 == 0</code>",a:["||"]},
+{t:3,q:"Return a value from a { } block in a switch expression: <code>____ \"invalid\";</code>",a:["yield"]},
+{t:3,q:"Leave a loop immediately: ____",a:["break"]},
+{t:3,q:"Skip to the next round of a loop: ____",a:["continue"]},
+{t:3,q:"A method that returns nothing has return type ____",a:["void"]},
+{t:3,q:"Loop that always runs at least once: ____",a:["do-while","dowhile","do while"]},
+{t:4,q:"Compare two Strings: <code>a.____(b)</code>",a:["equals"]},
+{t:4,q:"Compare Strings ignoring capitals: <code>a.____(\"yes\")</code>",a:["equalsignorecase"]},
+{t:4,q:"Number of characters in <code>s</code>: <code>s.____()</code>",a:["length"]},
+{t:4,q:"Last character of <code>s</code>: <code>s.charAt(s.length() ____ 1)</code>",a:["-"]},
+{t:4,q:"Palindrome: <code>new StringBuilder(s).____().toString().equals(s)</code>",a:["reverse"]},
+{t:4,q:"A die from 1 to 6: <code>r.nextInt(6) ____ 1</code>",a:["+"]},
+{t:4,q:"Create an object: <code>Random r = ____ Random();</code>",a:["new"]},
+{t:4,q:"printf with 2 decimals: <code>\"%____f\"</code>",a:[".2"]},
+{t:4,q:"printf placeholder for a whole number: <code>%____</code>",a:["d"]},
+{t:4,q:"Check the user typed a number: <code>keyboard.____()</code>",a:["hasnextint"]},
+{t:4,q:"Turn a StringBuilder into a String: <code>sb.____()</code>",a:["tostring"]},
+{t:5,q:"Attribute and parameter have the same name: <code>____.radius = radius;</code>",a:["this"]},
+{t:5,q:"Call another constructor of the same class: <code>____(name, 0);</code>",a:["this"]},
+{t:5,q:"Attributes should be ____ (encapsulation).",a:["private"]},
+{t:5,q:"Annotation written above toString: <code>@____</code>",a:["override"]},
+{t:5,q:"Default value of a boolean attribute: ____",a:["false"]},
+{t:5,q:"Default value of an object attribute: ____",a:["null"]},
+{t:5,q:"Absolute value: <code>Math.____(x)</code>",a:["abs"]},
+{t:5,q:"Smallest of a and b: <code>Math.____(a, b)</code>",a:["min"]}
+];
+
+const FLASH = [
+{t:1,f:"JVM vs JRE vs JDK",b:"JVM runs bytecode.<br>JRE = JVM + libraries (to run).<br>JDK = JRE + tools like javac (to develop)."},
+{t:1,f:"Compiled vs interpreted",b:"Compiled: translated once, fast, platform dependent.<br>Interpreted: translated every run, slow, platform independent.<br>Java: compiled to bytecode, then the JVM interprets it."},
+{t:1,f:"What is bytecode?",b:"The .class file javac makes. Code for the JVM, not for a real processor."},
+{t:1,f:"What is an algorithm?",b:"The steps to perform a task: input, output, test, repeat, compute."},
+{t:2,f:"The 8 primitive types",b:"byte · short · int · long · float · double · boolean · char"},
+{t:2,f:"int / int",b:"Always an int. 7 / 2 = 3. Make one side a double: 7 / 2.0 or (double) a / b."},
+{t:2,f:"x++ vs ++x",b:"x++ uses the old value, then adds 1.<br>++x adds 1 first, then uses the new value."},
+{t:2,f:"What does % do?",b:"Remainder. 17 % 5 = 2.<br>Even: n % 2 == 0. Last digit: n % 10."},
+{t:2,f:"Casting",b:"Small → big: automatic.<br>Big → small: (int) d. Cuts the decimals, never rounds."},
+{t:2,f:"Variable naming rules",b:"Letters, digits, _ and $. Not starting with a digit. Not a keyword.<br>camelCase for variables, UPPER_CASE for constants."},
+{t:2,f:"&& vs ||",b:"&& = both true.<br>|| = at least one true.<br>Both short-circuit: they stop as soon as the answer is known."},
+{t:2,f:"Ternary operator",b:"condition ? ifTrue : ifFalse<br>It returns a value; an if statement does not."},
+{t:3,f:"Expression vs statement vs block",b:"Expression: one value.<br>Statement: one instruction, ends with ;<br>Block: statements inside { }"},
+{t:3,f:"Scope",b:"A variable exists from its declaration to the closing } of its block."},
+{t:3,f:"for vs while vs do-while",b:"for: known number of times.<br>while: unknown, may run 0 times.<br>do-while: runs at least once."},
+{t:3,f:"break vs continue",b:"break: leave the loop.<br>continue: skip to the next round."},
+{t:3,f:"Old switch vs arrow switch",b:"Old: case 1: ... break; (falls through without break).<br>Arrow: case 1, 2 -> ...; no break, no fall through."},
+{t:3,f:"Switch expression rules",b:"Returns a value, ends with };<br>default is required.<br>Use yield to return from a { } block."},
+{t:3,f:"Leap year",b:"<pre>(y % 4 == 0 && y % 100 != 0) || y % 400 == 0</pre>"},
+{t:3,f:"Parameter vs argument",b:"Parameter: in the method declaration.<br>Argument: the value you pass in the call."},
+{t:4,f:"Class vs object",b:"Class = blueprint.<br>Object = an instance made with new."},
+{t:4,f:"What does new do?",b:"Allocates memory, calls a constructor, returns a reference to the new object."},
+{t:4,f:"Reference assignment",b:"p2 = p1 copies the reference. Both point to the SAME object."},
+{t:4,f:"Garbage collection",b:"Automatically frees objects nobody refers to anymore. Not immediate."},
+{t:4,f:"Random ranges",b:"nextInt(b): 0..b-1<br>nextInt(a, b): a..b-1<br>min..max: nextInt(max - min + 1) + min"},
+{t:4,f:"Random seed",b:"new Random(42): the same sequence every run."},
+{t:4,f:"String is…",b:"Immutable. Methods return a NEW String. Save it: s = s.toUpperCase();"},
+{t:4,f:"== vs equals",b:"== compares references.<br>equals compares text. Always use equals for Strings."},
+{t:4,f:"nextInt + nextLine trap",b:"After nextInt() the Enter stays behind. Call keyboard.nextLine(); once before reading text."},
+{t:4,f:"StringBuilder methods",b:"append · insert · reverse · setCharAt · deleteCharAt · length · charAt · toString"},
+{t:4,f:"printf specifiers",b:"%d int · %f decimal · %.2f 2 decimals · %s String · %c char · %b boolean · %n newline · %5d width 5 · %-10s left"},
+{t:4,f:"import rules",b:"Needed for java.util (Scanner, Random).<br>Not needed for java.lang (String, Math, System)."},
+{t:5,f:"Encapsulation",b:"Attributes private. Access only via public getters and validating setters."},
+{t:5,f:"Default values",b:"int 0 · double 0.0 · boolean false · char '\\u0000' · objects null.<br>Local variables have NO default."},
+{t:5,f:"Constructor rules",b:"Same name as the class. No return type.<br>No constructor written → free default one.<br>Any constructor written → the free one disappears."},
+{t:5,f:"this(...)",b:"Calls another constructor of the same class. Must be the first line."},
+{t:5,f:"this.x = x",b:"this.x is the attribute, x is the parameter. Without this. nothing changes."},
+{t:5,f:"Method overloading",b:"Same name, different parameter list. Return type doesn't count. Java picks by argument types."},
+{t:5,f:"toString",b:"Returns a String describing the object. println(obj) calls it automatically. Default: ClassName@hash."},
+{t:5,f:"Access modifiers",b:"private: class · (none): package · protected: + subclasses · public: everyone"},
+{t:5,f:"Class recipe",b:"1 private attributes<br>2 setters with checks<br>3 getters<br>4 constructors calling setters<br>5 toString"},
+{t:5,f:"Math class",b:"Static methods: Math.PI, abs, pow, sqrt, max, min, round. pow/sqrt return double."}
+];
+
+const CODE = [
+{t:2,title:"Sum of digits",task:"Ask the user for a 4-digit number (1000..9999). If it is out of range print <code>Invalid number</code>. Otherwise print <code>The sum of the digits is X</code>. Use constants MINIMUM and MAXIMUM.",
+starter:"import java.util.Scanner;\n\npublic class Digits {\n    public static void main(String[] args) {\n        // your code\n    }\n}\n",
+checks:[[/final\s+int\s+MINIMUM/,"Constant MINIMUM declared with final"],[/final\s+int\s+MAXIMUM/,"Constant MAXIMUM declared with final"],[/nextInt\s*\(/,"Reads an int with nextInt()"],[/%\s*10/,"Uses % 10 to get a digit"],[/\/\s*10|\/\s*100|\/\s*1000/,"Uses / to drop digits"],[/\|\||<\s*MINIMUM|>\s*MAXIMUM/,"Checks the range"]],
+sol:"import java.util.Scanner;\n\npublic class Digits {\n    public static void main(String[] args) {\n        final int MINIMUM = 1000;\n        final int MAXIMUM = 9999;\n        Scanner keyboard = new Scanner(System.in);\n        System.out.print(\"Enter a 4-digit number: \");\n        int number = keyboard.nextInt();\n        if (number < MINIMUM || number > MAXIMUM) {\n            System.out.println(\"Invalid number\");\n        } else {\n            int sum = 0;\n            while (number > 0) {\n                sum += number % 10;\n                number = number / 10;\n            }\n            System.out.println(\"The sum of the digits is \" + sum);\n        }\n    }\n}\n",out:"Enter a 4-digit number: 1540\nThe sum of the digits is 10"},
+{t:2,title:"VAT calculator",task:"Ask for an amount (double) and a VAT percentage. Print the amount with VAT using printf with 2 decimals, like <code>€100,00 + 21,0% VAT = €121,00</code>.",
+starter:"import java.util.Scanner;\n\npublic class Vat {\n    public static void main(String[] args) {\n        \n    }\n}\n",
+checks:[[/nextDouble\s*\(/,"Reads a double"],[/printf|String\.format/,"Uses printf / format"],[/%\.2f/,"Uses %.2f for 2 decimals"],[/%%/,"Prints a % sign with %%"],[/\/\s*100/,"Divides the percentage by 100"]],
+sol:"import java.util.Scanner;\n\npublic class Vat {\n    public static void main(String[] args) {\n        Scanner keyboard = new Scanner(System.in);\n        System.out.print(\"Amount in €: \");\n        double amount = keyboard.nextDouble();\n        System.out.print(\"VAT %: \");\n        double vat = keyboard.nextDouble();\n        double total = amount * (1 + vat / 100);\n        System.out.printf(\"€%.2f + %.1f%% VAT = €%.2f%n\", amount, vat, total);\n    }\n}\n",out:"Amount in €: 100\nVAT %: 21\n€100,00 + 21,0% VAT = €121,00"},
+{t:3,title:"Grade letters",task:"Read a score (0–100). Print A (≥90), B (≥80), C (≥70), D (≥60) or E. Print <code>Invalid score</code> for anything outside 0–100. Use an if / else-if ladder.",
+starter:"import java.util.Scanner;\n\npublic class Grade {\n    public static void main(String[] args) {\n        \n    }\n}\n",
+checks:[[/else\s+if/,"Uses else if"],[/>=\s*90/,"Tests >= 90"],[/>=\s*80/,"Tests >= 80"],[/>=\s*60/,"Tests >= 60"],[/<\s*0|>\s*100/,"Validates 0–100"]],
+sol:"import java.util.Scanner;\n\npublic class Grade {\n    public static void main(String[] args) {\n        Scanner keyboard = new Scanner(System.in);\n        System.out.print(\"Score: \");\n        int score = keyboard.nextInt();\n        if (score < 0 || score > 100) {\n            System.out.println(\"Invalid score\");\n        } else if (score >= 90) {\n            System.out.println(\"A\");\n        } else if (score >= 80) {\n            System.out.println(\"B\");\n        } else if (score >= 70) {\n            System.out.println(\"C\");\n        } else if (score >= 60) {\n            System.out.println(\"D\");\n        } else {\n            System.out.println(\"E\");\n        }\n    }\n}\n",out:"Score: 84\nB"},
+{t:3,title:"Days in month",task:"Ask for a month (1–12) and a year. Print e.g. <code>In 2024 month 2 has 29 days.</code> Use a switch expression and the leap-year rule. Use only one println for the result.",
+starter:"import java.util.Scanner;\n\npublic class DaysInMonth {\n    public static void main(String[] args) {\n        \n    }\n}\n",
+checks:[[/switch\s*\(/,"Uses a switch"],[/->/,"Uses the arrow syntax"],[/default/,"Has a default"],[/%\s*400/,"Checks % 400"],[/%\s*100/,"Checks % 100"],[/%\s*4\b/,"Checks % 4"]],
+sol:"import java.util.Scanner;\n\npublic class DaysInMonth {\n    public static void main(String[] args) {\n        Scanner keyboard = new Scanner(System.in);\n        System.out.print(\"Month (1-12): \");\n        int month = keyboard.nextInt();\n        System.out.print(\"Year: \");\n        int year = keyboard.nextInt();\n        boolean leap = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;\n        int days = switch (month) {\n            case 4, 6, 9, 11 -> 30;\n            case 2 -> leap ? 29 : 28;\n            default -> 31;\n        };\n        System.out.println(\"In \" + year + \" month \" + month + \" has \" + days + \" days.\");\n    }\n}\n",out:"Month (1-12): 2\nYear: 2024\nIn 2024 month 2 has 29 days."},
+{t:3,title:"Multiples with while",task:"Ask for a number. Print all its multiples below a constant MAX = 100, each on one line, using a while loop.",
+starter:"import java.util.Scanner;\n\npublic class Multiples {\n    public static void main(String[] args) {\n        \n    }\n}\n",
+checks:[[/final\s+int\s+MAX/,"Constant MAX"],[/while\s*\(/,"Uses a while loop"],[/<\s*MAX/,"Stops below MAX"],[/\+=|=\s*\w+\s*\+/,"Adds the number each round"]],
+sol:"import java.util.Scanner;\n\npublic class Multiples {\n    public static void main(String[] args) {\n        final int MAX = 100;\n        Scanner keyboard = new Scanner(System.in);\n        System.out.print(\"Number: \");\n        int base = keyboard.nextInt();\n        int multiple = base;\n        while (multiple < MAX) {\n            System.out.println(multiple);\n            multiple += base;\n        }\n    }\n}\n",out:"Number: 28\n28\n56\n84"},
+{t:3,title:"Factorials",task:"Print the factorials from 1! to 20! like <code>5! = 120</code>, using a for loop. Watch out: the numbers get very big.",
+starter:"public class Factorial {\n    public static void main(String[] args) {\n        \n    }\n}\n",
+checks:[[/long\s+\w+\s*=\s*1/,"A long starting at 1"],[/for\s*\(/,"Uses a for loop"],[/<=\s*20/,"Goes up to 20"],[/\*=/,"Multiplies with *="]],
+sol:"public class Factorial {\n    public static void main(String[] args) {\n        long result = 1;\n        for (int number = 1; number <= 20; number++) {\n            result *= number;\n            System.out.printf(\"%d! = %d%n\", number, result);\n        }\n    }\n}\n",out:"1! = 1\n2! = 2\n...\n20! = 2432902008176640000"},
+{t:3,title:"Divisible by both, 10 per line",task:"Ask for two numbers. Print all numbers from 1 to 999 divisible by both, with at most 10 numbers on a line.",
+starter:"import java.util.Scanner;\n\npublic class Divisible {\n    public static void main(String[] args) {\n        \n    }\n}\n",
+checks:[[/for\s*\(/,"Loops with for"],[/%\s*\w+\s*==\s*0/,"Checks divisibility with % == 0"],[/&&/,"Combines both tests with &&"],[/%\s*10\s*==\s*0/,"New line every 10 numbers"]],
+sol:"import java.util.Scanner;\n\npublic class Divisible {\n    public static void main(String[] args) {\n        Scanner keyboard = new Scanner(System.in);\n        System.out.print(\"First: \");\n        int first = keyboard.nextInt();\n        System.out.print(\"Second: \");\n        int second = keyboard.nextInt();\n        int count = 0;\n        for (int i = 1; i < 1000; i++) {\n            if (i % first == 0 && i % second == 0) {\n                System.out.print(i + \" \");\n                count++;\n                if (count % 10 == 0) {\n                    System.out.println();\n                }\n            }\n        }\n    }\n}\n",out:"First: 7\nSecond: 3\n21 42 63 84 105 126 147 168 189 210\n231 ..."},
+{t:3,title:"ASCII box (nested loops)",task:"Ask for a width and height. Print a box outline with * (only the borders, inside spaces).",
+starter:"import java.util.Scanner;\n\npublic class Box {\n    public static void main(String[] args) {\n        \n    }\n}\n",
+checks:[[/for[\s\S]*for/,"Two loops (nested)"],[/println\s*\(\s*\)/,"New line after each row"],[/==\s*0|==\s*\w+\s*-\s*1/,"Detects the first/last row or column"],[/\|\|/,"Uses || for the border test"]],
+sol:"import java.util.Scanner;\n\npublic class Box {\n    public static void main(String[] args) {\n        Scanner keyboard = new Scanner(System.in);\n        System.out.print(\"Width: \");\n        int width = keyboard.nextInt();\n        System.out.print(\"Height: \");\n        int height = keyboard.nextInt();\n        for (int row = 0; row < height; row++) {\n            for (int col = 0; col < width; col++) {\n                if (row == 0 || row == height - 1 || col == 0 || col == width - 1) {\n                    System.out.print(\"*\");\n                } else {\n                    System.out.print(\" \");\n                }\n            }\n            System.out.println();\n        }\n    }\n}\n",out:"Width: 5\nHeight: 3\n*****\n*   *\n*****"},
+{t:3,title:"Functions: read, calculate, print",task:"Rewrite the Age category program (Baby &lt;2, Child ≤12, Teenager ≤17, Adult) with 3 static methods: <code>readAge()</code>, <code>category(int age)</code> returning a String, and <code>printResult(String c)</code>.",
+starter:"import java.util.Scanner;\n\npublic class AgeApp {\n    public static void main(String[] args) {\n        \n    }\n}\n",
+checks:[[/static\s+int\s+readAge\s*\(\s*\)/,"static int readAge()"],[/static\s+String\s+category\s*\(\s*int/,"static String category(int age)"],[/static\s+void\s+printResult\s*\(\s*String/,"static void printResult(String c)"],[/return/,"Uses return"],[/category\s*\(\s*\w+\s*\)/,"main calls category(...)"]],
+sol:"import java.util.Scanner;\n\npublic class AgeApp {\n    public static void main(String[] args) {\n        int age = readAge();\n        String c = category(age);\n        printResult(c);\n    }\n\n    public static int readAge() {\n        Scanner keyboard = new Scanner(System.in);\n        System.out.print(\"Your age: \");\n        return keyboard.nextInt();\n    }\n\n    public static String category(int age) {\n        if (age < 2) {\n            return \"Baby\";\n        } else if (age <= 12) {\n            return \"Child\";\n        } else if (age <= 17) {\n            return \"Teenager\";\n        }\n        return \"Adult\";\n    }\n\n    public static void printResult(String c) {\n        System.out.println(\"You are a \" + c);\n    }\n}\n",out:"Your age: 15\nYou are a Teenager"},
+{t:4,title:"String report",task:"Read a sentence. Print it in upper case, its length, the first and last character, and how many times 'e' appears.",
+starter:"import java.util.Scanner;\n\npublic class StringReport {\n    public static void main(String[] args) {\n        \n    }\n}\n",
+checks:[[/nextLine\s*\(/,"Reads a whole line"],[/toUpperCase\s*\(/,"Upper case"],[/length\s*\(\s*\)\s*-\s*1/,"Last char with length() - 1"],[/charAt\s*\(/,"Uses charAt"],[/==\s*'e'/,"Compares a char with == 'e'"],[/for\s*\(/,"Loops over the characters"]],
+sol:"import java.util.Scanner;\n\npublic class StringReport {\n    public static void main(String[] args) {\n        Scanner scanner = new Scanner(System.in);\n        System.out.print(\"Sentence: \");\n        String s = scanner.nextLine();\n        System.out.println(s.toUpperCase());\n        System.out.println(s.length());\n        System.out.println(s.charAt(0));\n        System.out.println(s.charAt(s.length() - 1));\n        int count = 0;\n        for (int i = 0; i < s.length(); i++) {\n            if (s.charAt(i) == 'e') {\n                count++;\n            }\n        }\n        System.out.println(count);\n    }\n}\n",out:"Sentence: the java language\nTHE JAVA LANGUAGE\n17\nt\ne\n2"},
+{t:4,title:"Palindrome",task:"Read a word and print <code>\"racecar\" is a palindrome.</code> or <code>\"banana\" is not a palindrome.</code> Use StringBuilder.",
+starter:"import java.util.Scanner;\n\npublic class Palindrome {\n    public static void main(String[] args) {\n        \n    }\n}\n",
+checks:[[/new\s+StringBuilder/,"Creates a StringBuilder"],[/reverse\s*\(/,"Uses reverse()"],[/toString\s*\(/,"Converts back with toString()"],[/\.equals\s*\(/,"Compares with equals (not ==)"],[/\\"/,"Prints quotes with \\\""]],
+sol:"import java.util.Scanner;\n\npublic class Palindrome {\n    public static void main(String[] args) {\n        Scanner scanner = new Scanner(System.in);\n        System.out.print(\"Enter a word: \");\n        String word = scanner.next();\n        String reversed = new StringBuilder(word).reverse().toString();\n        if (reversed.equals(word)) {\n            System.out.println(\"\\\"\" + word + \"\\\" is a palindrome.\");\n        } else {\n            System.out.println(\"\\\"\" + word + \"\\\" is not a palindrome.\");\n        }\n    }\n}\n",out:"Enter a word: racecar\n\"racecar\" is a palindrome."},
+{t:4,title:"Safe number input",task:"Keep asking for a number between 1 and 20 until it is valid. If the user types text, print <code>Not a number!</code>. Then print the numbers from 1 to that number with a StringBuilder.",
+starter:"import java.util.Scanner;\n\npublic class CountTo {\n    public static void main(String[] args) {\n        \n    }\n}\n",
+checks:[[/hasNextInt\s*\(/,"Uses hasNextInt()"],[/nextLine\s*\(/,"Throws away bad input with nextLine()"],[/while|do\s*\{/,"Repeats with a loop"],[/StringBuilder/,"Uses a StringBuilder"],[/append\s*\(/,"Uses append()"]],
+sol:"import java.util.Scanner;\n\npublic class CountTo {\n    public static void main(String[] args) {\n        final int MIN = 1;\n        final int MAX = 20;\n        Scanner keyboard = new Scanner(System.in);\n        int number = 0;\n        boolean valid = false;\n        while (!valid) {\n            System.out.print(\"Number (1-20): \");\n            if (!keyboard.hasNextInt()) {\n                System.out.println(\"Not a number!\");\n                keyboard.nextLine();\n            } else {\n                number = keyboard.nextInt();\n                if (number >= MIN && number <= MAX) {\n                    valid = true;\n                } else {\n                    System.out.println(\"Between 1 and 20 please.\");\n                }\n            }\n        }\n        StringBuilder sb = new StringBuilder();\n        for (int i = 1; i <= number; i++) {\n            sb.append(i).append(' ');\n        }\n        System.out.println(sb);\n    }\n}\n",out:"Number (1-20): k\nNot a number!\nNumber (1-20): 5\n1 2 3 4 5"},
+{t:4,title:"Lottery + initials",task:"Ask for a full name and print the initials like <code>J.C.</code>. Then print 6 random numbers from 1 to 45 on one line using printf <code>%4d</code>.",
+starter:"import java.util.Random;\nimport java.util.Scanner;\n\npublic class Lottery {\n    public static void main(String[] args) {\n        \n    }\n}\n",
+checks:[[/new\s+Random\s*\(/,"Creates a Random"],[/nextInt\s*\(\s*45\s*\)\s*\+\s*1|nextInt\s*\(\s*1\s*,\s*46\s*\)/,"Range 1..45"],[/%4d/,"printf with %4d"],[/charAt\s*\(\s*\w+\s*-\s*1\s*\)\s*==\s*' '|==\s*' '/,"Finds the letter after a space"],[/toUpperCase/,"Upper case initials"]],
+sol:"import java.util.Random;\nimport java.util.Scanner;\n\npublic class Lottery {\n    public static void main(String[] args) {\n        Scanner scanner = new Scanner(System.in);\n        System.out.print(\"Full name: \");\n        String name = scanner.nextLine();\n        StringBuilder initials = new StringBuilder();\n        for (int i = 0; i < name.length(); i++) {\n            if (i == 0 || name.charAt(i - 1) == ' ') {\n                initials.append(name.charAt(i)).append('.');\n            }\n        }\n        System.out.println(\"Welcome \" + initials.toString().toUpperCase());\n        Random random = new Random();\n        for (int i = 0; i < 6; i++) {\n            System.out.printf(\"%4d\", random.nextInt(45) + 1);\n        }\n        System.out.println();\n    }\n}\n",out:"Full name: jill claes\nWelcome J.C.\n  32  49  26   1  23  37"},
+{t:5,title:"Rectangle class",task:"Write class <code>Rectangle</code> with private <code>width</code> and <code>height</code> (int). Setters only accept values &gt; 0 (else print <code>Invalid size</code>). Constructors: (width, height) calling the setters, and an empty one that makes a 1×1 rectangle using <code>this(...)</code>. Methods: <code>getArea()</code>, <code>getPerimeter()</code>, <code>toString()</code> → <code>Rectangle 4x8 area=32</code>.",
+starter:"public class Rectangle {\n    \n}\n",
+checks:[[/private\s+int\s+width/,"private int width"],[/private\s+int\s+height/,"private int height"],[/this\.width\s*=/,"this.width = ... in the setter"],[/public\s+Rectangle\s*\(\s*\)\s*\{\s*this\s*\(/,"Empty constructor calls this(...)"],[/setWidth\s*\(\s*width\s*\)|setWidth\s*\(/,"Constructor calls the setter"],[/if\s*\(\s*\w+\s*>\s*0/,"Setter checks > 0"],[/int\s+getArea\s*\(\s*\)/,"int getArea()"],[/String\s+toString\s*\(\s*\)/,"String toString()"],[/return\s/,"Methods use return"]],
+sol:"public class Rectangle {\n    private int width;\n    private int height;\n\n    public Rectangle(int width, int height) {\n        setWidth(width);\n        setHeight(height);\n    }\n\n    public Rectangle() {\n        this(1, 1);\n    }\n\n    public void setWidth(int width) {\n        if (width > 0) {\n            this.width = width;\n        } else {\n            System.out.println(\"Invalid size\");\n        }\n    }\n\n    public void setHeight(int height) {\n        if (height > 0) {\n            this.height = height;\n        } else {\n            System.out.println(\"Invalid size\");\n        }\n    }\n\n    public int getWidth() { return width; }\n    public int getHeight() { return height; }\n\n    public int getArea() {\n        return width * height;\n    }\n\n    public int getPerimeter() {\n        return 2 * (width + height);\n    }\n\n    @Override\n    public String toString() {\n        return String.format(\"Rectangle %dx%d area=%d\", width, height, getArea());\n    }\n}\n",out:"new Rectangle(4, 8) → Rectangle 4x8 area=32\nnew Rectangle(-1, 5) → prints Invalid size"},
+{t:5,title:"Bank account",task:"Write class <code>BankAccount</code>: private holder (String), iban (String), balance (double). Constructors (holder, iban) with balance 0 and (holder, iban, balance). <code>deposit(double)</code>, <code>boolean withdraw(double)</code> that refuses if the balance would go negative, getters, and <code>toString()</code> → <code>The account BE15... of Greg has a balance of € 1000,00</code>.",
+starter:"public class BankAccount {\n    \n}\n",
+checks:[[/private\s+double\s+balance/,"private double balance"],[/this\s*\(\s*holder\s*,\s*iban/,"Constructors reuse each other with this(...)"],[/void\s+deposit\s*\(\s*double/,"void deposit(double)"],[/boolean\s+withdraw\s*\(\s*double/,"boolean withdraw(double)"],[/return\s+true/,"withdraw returns true"],[/return\s+false/,"withdraw returns false"],[/%\.2f/,"toString with %.2f"]],
+sol:"public class BankAccount {\n    private String holder;\n    private String iban;\n    private double balance;\n\n    public BankAccount(String holder, String iban, double balance) {\n        this.holder = holder;\n        this.iban = iban;\n        this.balance = balance;\n    }\n\n    public BankAccount(String holder, String iban) {\n        this(holder, iban, 0);\n    }\n\n    public void deposit(double amount) {\n        balance += amount;\n    }\n\n    public boolean withdraw(double amount) {\n        if (balance - amount < 0) {\n            return false;\n        }\n        balance -= amount;\n        return true;\n    }\n\n    public String getHolder() { return holder; }\n    public String getIban() { return iban; }\n    public double getBalance() { return balance; }\n\n    @Override\n    public String toString() {\n        return String.format(\"The account %s of %s has a balance of € %.2f\", iban, holder, balance);\n    }\n}\n",out:"The account BE15 6474 3001 5840 of Gregory Persons has a balance of € 3000,00"},
+{t:5,title:"Circle with validation",task:"Write class <code>Circle</code>: private radius (int) and colour (String, default \"Black\"). Radius must be 10..1000, else print <code>Invalid radius X</code>. Constructors (radius, colour) and (radius). Methods <code>circumference()</code>, <code>surface()</code>, <code>deltaSurface(Circle other)</code> (absolute difference) and toString.",
+starter:"public class Circle {\n    \n}\n",
+checks:[[/private\s+int\s+radius/,"private int radius"],[/private\s+String\s+colour\s*=\s*"Black"|this\s*\(\s*radius\s*,\s*"Black"\s*\)/,"Default colour Black"],[/setRadius\s*\(\s*radius\s*\)/,"Constructor calls setRadius"],[/Math\.PI/,"Uses Math.PI"],[/Math\.abs/,"Uses Math.abs for the difference"],[/Circle\s+other/,"Method takes another Circle"],[/String\s+toString/,"Has toString"]],
+sol:"public class Circle {\n    private static final int MIN_RADIUS = 10;\n    private static final int MAX_RADIUS = 1000;\n    private int radius;\n    private String colour = \"Black\";\n\n    public Circle(int radius, String colour) {\n        setRadius(radius);\n        this.colour = colour;\n    }\n\n    public Circle(int radius) {\n        setRadius(radius);\n    }\n\n    public void setRadius(int radius) {\n        if (radius >= MIN_RADIUS && radius <= MAX_RADIUS) {\n            this.radius = radius;\n        } else {\n            System.out.println(\"Invalid radius \" + radius);\n        }\n    }\n\n    public double circumference() {\n        return 2 * Math.PI * radius;\n    }\n\n    public double surface() {\n        return Math.PI * radius * radius;\n    }\n\n    public double deltaSurface(Circle other) {\n        return Math.abs(surface() - other.surface());\n    }\n\n    @Override\n    public String toString() {\n        return String.format(\"Colour: %s Radius: %d Surface: %.2f\", colour, radius, surface());\n    }\n}\n",out:"new Circle(5) → Invalid radius 5\nnew Circle(10, \"Red\") → Colour: Red Radius: 10 Surface: 314,16"},
+{t:5,title:"Chess club Player (old exam question)",task:"Class <code>Player</code>: name (not empty), birthYear (not in the future, not more than 120 years ago), winRatio float 0..1, retired boolean. Print <code>Invalid age!</code> / <code>Invalid winratio!</code> on bad input. Constructor with all 4. <code>setAge(int)</code> sets the birth year. <code>boolean play()</code>: win if a random number is lower than winRatio. <code>boolean play(Player other)</code>: compare winRatio − random for both. toString: <code>Wim (1963: Winratio: 0.73 active.)</code>",
+starter:"import java.util.Random;\n\npublic class Player {\n    \n}\n",
+checks:[[/private\s+String\s+name/,"private String name"],[/private\s+float\s+winRatio/,"private float winRatio"],[/CURRENT_YEAR|LocalDate/,"Uses the current year"],[/Invalid age/,"Prints Invalid age!"],[/Invalid winratio/i,"Prints Invalid winratio!"],[/boolean\s+play\s*\(\s*\)/,"boolean play()"],[/boolean\s+play\s*\(\s*Player\s+\w+\s*\)/,"boolean play(Player other) (overloading)"],[/nextDouble\s*\(/,"Uses random.nextDouble()"],[/\?\s*"retired"\s*:\s*"active"|\?\s*"active"\s*:\s*"retired"/,"toString uses the ternary for active/retired"]],
+sol:"import java.util.Random;\n\npublic class Player {\n    private static final int CURRENT_YEAR = 2026;\n    private String name;\n    private int birthYear;\n    private float winRatio;\n    private boolean retired;\n\n    public Player(String name, int birthYear, float winRatio, boolean retired) {\n        setName(name);\n        setAge(birthYear);\n        setWinRatio(winRatio);\n        this.retired = retired;\n    }\n\n    public void setName(String name) {\n        if (name == null || name.isEmpty()) {\n            System.out.println(\"Invalid name!\");\n        } else {\n            this.name = name;\n        }\n    }\n\n    public void setAge(int birthYear) {\n        if (birthYear > CURRENT_YEAR || birthYear < CURRENT_YEAR - 120) {\n            System.out.println(\"Invalid age!\");\n        } else {\n            this.birthYear = birthYear;\n        }\n    }\n\n    public void setWinRatio(float winRatio) {\n        if (winRatio < 0 || winRatio > 1) {\n            System.out.println(\"Invalid winratio!\");\n        } else {\n            this.winRatio = winRatio;\n        }\n    }\n\n    public boolean play() {\n        Random random = new Random();\n        return random.nextDouble() < winRatio;\n    }\n\n    public boolean play(Player other) {\n        Random random = new Random();\n        double mine = winRatio - random.nextDouble();\n        double theirs = other.winRatio - random.nextDouble();\n        return mine > theirs;\n    }\n\n    @Override\n    public String toString() {\n        return name + \" (\" + birthYear + \": Winratio: \" + winRatio + \" \"\n                + (retired ? \"retired\" : \"active\") + \".)\";\n    }\n}\n",out:"Invalid age!\nInvalid winratio!\nSebastiaan (1993: Winratio: 0.5 active.) win? true"},
+{t:5,title:"Student grade evaluator (old exam question)",task:"Class <code>Student</code>: name (not empty, must contain a space), id (≥ 0), grade (0..100). Constructor, getters/setters, <code>boolean isCorrect()</code> printing an error per wrong value, and <code>getPerformanceCategory()</code> using a switch: Excellent ≥ 90, Good ≥ 75, Sufficient ≥ 50, else Insufficient.",
+starter:"public class Student {\n    \n}\n",
+checks:[[/private\s+String\s+name/,"private String name"],[/private\s+int\s+id/,"private int id"],[/private\s+double\s+grade/,"private double grade"],[/boolean\s+isCorrect\s*\(\s*\)/,"boolean isCorrect()"],[/contains\s*\(\s*" "\s*\)/,"Checks the name contains a space"],[/switch\s*\(/,"Uses a switch"],[/\(int\)\s*\(?\s*grade\s*\/\s*10/,"Divides grade by 10 and casts to int"],[/Excellent/,"Returns Excellent"],[/75/,"Handles the 75 boundary"]],
+sol:"public class Student {\n    private String name;\n    private int id;\n    private double grade;\n\n    public Student(String name, int id, double grade) {\n        this.name = name;\n        this.id = id;\n        this.grade = grade;\n    }\n\n    public String getName() { return name; }\n    public int getId() { return id; }\n    public double getGrade() { return grade; }\n    public void setName(String name) { this.name = name; }\n    public void setId(int id) { this.id = id; }\n    public void setGrade(double grade) { this.grade = grade; }\n\n    public boolean isCorrect() {\n        boolean ok = true;\n        if (name.isEmpty() || !name.contains(\" \")) {\n            System.out.println(\"Error! The name must contain at least 1 space!\");\n            ok = false;\n        }\n        if (id < 0) {\n            System.out.println(\"Error! The ID must not be negative!\");\n            ok = false;\n        }\n        if (grade < 0 || grade > 100) {\n            System.out.println(\"Error! The grade must be between 0 and 100!\");\n            ok = false;\n        }\n        return ok;\n    }\n\n    public String getPerformanceCategory() {\n        return switch ((int) (grade / 10)) {\n            case 10, 9 -> \"Excellent\";\n            case 8 -> \"Good\";\n            case 7 -> grade >= 75 ? \"Good\" : \"Sufficient\";\n            case 6, 5 -> \"Sufficient\";\n            default -> \"Insufficient\";\n        };\n    }\n}\n",out:"Alice Verberckmoes, 101, 95 → Excellent\nBob Lowen, 102, 63 → Sufficient"},
+{t:5,title:"SalesPerson: compare objects",task:"Class <code>SalesPerson</code> with private name and revenue, a constructor, getters, and <code>boolean hasMoreRevenueThan(SalesPerson other)</code>. In main, create 3 sales people and print the top earner using the ternary operator.",
+starter:"public class SalesPerson {\n    \n}\n",
+checks:[[/private\s+double\s+revenue/,"private double revenue"],[/boolean\s+hasMoreRevenueThan\s*\(\s*SalesPerson\s+\w+\s*\)/,"boolean hasMoreRevenueThan(SalesPerson other)"],[/other\.\w+/,"Uses the other object"],[/\?[^:]+:/,"Uses the ternary operator"],[/getName\s*\(/,"Prints the name with getName()"]],
+sol:"public class SalesPerson {\n    private String name;\n    private double revenue;\n\n    public SalesPerson(String name, double revenue) {\n        this.name = name;\n        this.revenue = revenue;\n    }\n\n    public boolean hasMoreRevenueThan(SalesPerson other) {\n        return revenue > other.getRevenue();\n    }\n\n    public double getRevenue() { return revenue; }\n    public String getName() { return name; }\n\n    public static void main(String[] args) {\n        SalesPerson one = new SalesPerson(\"Jan\", 1200);\n        SalesPerson two = new SalesPerson(\"Laetitia\", 1800);\n        SalesPerson three = new SalesPerson(\"Lotte\", 1500);\n        SalesPerson top = one.hasMoreRevenueThan(two) ? one : two;\n        top = top.hasMoreRevenueThan(three) ? top : three;\n        System.out.println(\"Our top earner is \" + top.getName() + \"!\");\n    }\n}\n",out:"Our top earner is Laetitia!"}
+];
+
+/* ================= HELPERS ================= */
+const $ = s => document.querySelector(s);
+const app = $("#app");
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const norm = s => s.toLowerCase().replace(/\s+/g,"");
+const byTopic = (arr, t) => t == 0 ? arr : arr.filter(x => x.t == t);
+const topicSelect = id => `<select id="${id}">${TOPICS.map((t,i)=>`<option value="${i}">${t}</option>`).join("")}</select>`;
+let timerHandle = null;
+function stopTimer(){ if (timerHandle) { clearInterval(timerHandle); timerHandle = null; } }
+function store(k, v){ try { localStorage.setItem("jlab-"+k, JSON.stringify(v)); } catch(e){} }
+function load(k, d){ try { const v = localStorage.getItem("jlab-"+k); return v ? JSON.parse(v) : d; } catch(e){ return d; } }
+
+/* ================= ROUTER ================= */
+const VIEWS = {home, mock, mcq, blanks, flash, code};
+function go(v){
+  stopTimer();
+  document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("on", b.dataset.v === v));
+  (VIEWS[v] || home)();
+  window.scrollTo(0,0);
+  try { if (location.hash !== "#" + v) history.replaceState(null, "", "#" + v); } catch(e){}
+}
+document.querySelectorAll("#nav button").forEach(b => b.onclick = () => go(b.dataset.v));
+
+/* ================= HOME ================= */
+function home(){
+  const best = load("best", null);
+  app.innerHTML = `
+  <div class="card">
+    <h2>Ready for Tuesday?</h2>
+    <p class="lead">${MCQ.length} quiz questions, ${BLANKS.length} fill-in-the-blanks, ${FLASH.length} flashcards and ${CODE.length} coding exercises from M1–M5. Everything is shuffled, so every round is different.</p>
+    ${best ? `<p class="muted" style="margin:0">Your best mock test: <b>${best}%</b></p>` : ""}
+  </div>
+  <div class="grid2">
+    <button class="tile" data-go="mock"><b>Mock test</b><span>15 questions + 8 blanks + 1 coding task, 45-minute timer</span></button>
+    <button class="tile" data-go="mcq"><b>Quiz</b><span>Multiple choice with instant explanations</span></button>
+    <button class="tile" data-go="blanks"><b>Fill in the blanks</b><span>Type the missing keyword or symbol</span></button>
+    <button class="tile" data-go="flash"><b>Flashcards</b><span>Tap to flip, mark what you know</span></button>
+    <button class="tile" data-go="code"><b>Code practice</b><span>Write real Java, get a checklist and the model answer</span></button>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h3>How to use this</h3>
+    <p class="muted" style="margin:0">Start with Flashcards to warm up, then Quiz and Fill in the blanks per module. Do at least 3 Code practice exercises from M5. End with a Mock test. The real exam has no IDE, so type your code here without autocomplete.</p>
+  </div>`;
+  app.querySelectorAll("[data-go]").forEach(b => b.onclick = () => go(b.dataset.go));
+}
+
+/* ================= QUIZ (MCQ) ================= */
+function mcqHTML(q, i){
+  return `<div class="card" data-i="${i}">
+    <span class="tag">${TOPICS[q.t]}</span>
+    <div><b>${i+1}.</b> ${q.q}</div>
+    ${q.c ? `<pre><code>${esc(q.c)}</code></pre>` : ""}
+    <div class="opts">${q.order.map(k => `<button class="opt" data-k="${k}">${q.o[k]}</button>`).join("")}</div>
+    <div class="why hidden"></div>
+  </div>`;
+}
+function wireMcq(container, qs, onAnswer){
+  container.querySelectorAll(".card[data-i]").forEach(card => {
+    const q = qs[+card.dataset.i];
+    card.querySelectorAll(".opt").forEach(btn => btn.onclick = () => {
+      if (q.done) return;
+      q.done = true;
+      const k = +btn.dataset.k, ok = k === q.a;
+      card.querySelectorAll(".opt").forEach(b => { b.disabled = true; if (+b.dataset.k === q.a) b.classList.add("right"); });
+      if (!ok) btn.classList.add("wrong");
+      const w = card.querySelector(".why");
+      w.innerHTML = `<b class="${ok?"ok":"no"}">${ok?"Correct.":"Not quite."}</b> ${q.w}`;
+      w.classList.remove("hidden");
+      onAnswer && onAnswer(ok);
+    });
+  });
+}
+function mcq(){
+  app.innerHTML = `<div class="card"><h2>Quiz</h2><p class="lead">Pick a module or mix everything. You get 10 random questions.</p>
+    <div class="row">${topicSelect("mt")}<button class="btn" id="mgo">Start</button></div></div><div id="mq"></div>`;
+  $("#mgo").onclick = () => {
+    const pool = shuffle(byTopic(MCQ, +$("#mt").value)).slice(0, 10).map(q => ({...q, order: shuffle([...q.o.keys()]), done:false}));
+    let score = 0, answered = 0;
+    const box = $("#mq");
+    box.innerHTML = `<div class="progress"><i id="mp"></i></div>` + pool.map(mcqHTML).join("") + `<div class="card hidden" id="mres"></div>`;
+    wireMcq(box, pool, ok => {
+      score += ok ? 1 : 0; answered++;
+      $("#mp").style.width = (answered / pool.length * 100) + "%";
+      if (answered === pool.length) {
+        const r = $("#mres");
+        r.innerHTML = `<div class="score">${score} / ${pool.length}</div><p class="muted">${score >= 8 ? "Strong. Try another module." : score >= 5 ? "Decent. Read the explanations you missed, then go again." : "Go back to the notes for this module, then retry."}</p><button class="btn" id="again">New round</button>`;
+        r.classList.remove("hidden");
+        $("#again").onclick = () => $("#mgo").click();
+        r.scrollIntoView({behavior:"smooth"});
+      }
+    });
+  };
+}
+
+/* ================= FILL IN THE BLANKS ================= */
+function blankHTML(b, i){
+  const parts = b.q.split("____");
+  return `<div class="card" data-b="${i}">
+    <span class="tag">${TOPICS[b.t]}</span>
+    <div class="row" style="gap:6px"><b>${i+1}.</b> ${parts[0]}<input class="blank" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="answer">${parts[1] || ""}</div>
+    <div class="why hidden"></div>
+  </div>`;
+}
+function checkBlank(card, b){
+  const inp = card.querySelector("input"), v = norm(inp.value), ok = b.a.some(x => norm(x) === v);
+  inp.classList.remove("ok","no"); inp.classList.add(ok ? "ok" : "no");
+  const w = card.querySelector(".why");
+  w.innerHTML = ok ? `<b class="ok">Correct.</b>` : `<b class="no">Answer:</b> <code>${esc(b.a[0])}</code>`;
+  w.classList.remove("hidden");
+  return ok;
+}
+function blanks(){
+  app.innerHTML = `<div class="card"><h2>Fill in the blanks</h2><p class="lead">Type the missing word, keyword or symbol. Capitals and spaces don't matter.</p>
+    <div class="row">${topicSelect("bt")}<button class="btn" id="bgo">Start</button></div></div><div id="bq"></div>`;
+  $("#bgo").onclick = () => {
+    const pool = shuffle(byTopic(BLANKS, +$("#bt").value)).slice(0, 10);
+    const box = $("#bq");
+    box.innerHTML = pool.map(blankHTML).join("") + `<div class="card"><div class="row"><button class="btn" id="bcheck">Check all</button><button class="btn ghost" id="bnew">New round</button></div><div id="bres" style="margin-top:12px"></div></div>`;
+    box.querySelectorAll("input.blank").forEach((inp, idx, all) => inp.addEventListener("keydown", e => { if (e.key === "Enter") { checkBlank(inp.closest(".card"), pool[idx]); (all[idx+1] || inp).focus(); } }));
+    $("#bcheck").onclick = () => {
+      let s = 0; box.querySelectorAll(".card[data-b]").forEach(c => { s += checkBlank(c, pool[+c.dataset.b]) ? 1 : 0; });
+      $("#bres").innerHTML = `<div class="score">${s} / ${pool.length}</div>`;
+    };
+    $("#bnew").onclick = () => $("#bgo").click();
+    box.querySelector("input.blank").focus();
+  };
+}
+
+/* ================= FLASHCARDS ================= */
+function flash(){
+  app.innerHTML = `<div class="card"><h2>Flashcards</h2><p class="lead">Tap the card to flip it. Mark it as known or not; cards you don't know come back later in the round.</p>
+    <div class="row">${topicSelect("ft")}<button class="btn" id="fgo">Start</button></div></div><div id="fbox"></div>`;
+  $("#fgo").onclick = () => {
+    let deck = shuffle(byTopic(FLASH, +$("#ft").value)), known = 0, total = deck.length;
+    const box = $("#fbox");
+    const show = () => {
+      if (!deck.length) { box.innerHTML = `<div class="card"><div class="score">Done</div><p class="muted">You went through all ${total} cards.</p><button class="btn" id="fagain">Shuffle again</button></div>`; $("#fagain").onclick = () => $("#fgo").click(); return; }
+      const c = deck[0];
+      box.innerHTML = `<div class="progress"><i style="width:${known/total*100}%"></i></div>
+        <div class="flash" id="fc"><div class="inner">
+          <div class="face"><small>${TOPICS[c.t]}</small>${c.f}</div>
+          <div class="face back"><small>Answer</small><div>${c.b}</div></div>
+        </div></div>
+        <div class="row" style="margin-top:14px;justify-content:center">
+          <button class="btn ghost" id="fno">Still learning</button>
+          <button class="btn" id="fyes">I know it</button>
+        </div>
+        <p class="muted" style="text-align:center;font-size:13px">${known} of ${total} known · ${deck.length} left</p>`;
+      $("#fc").onclick = () => $("#fc").classList.toggle("flip");
+      $("#fyes").onclick = () => { deck.shift(); known++; show(); };
+      $("#fno").onclick = () => {
+        const fc = $("#fc"), btn = $("#fno");
+        if (btn.dataset.step !== "next") {
+          fc.classList.add("flip");                       // show the answer first
+          btn.dataset.step = "next";
+          btn.textContent = "Got it, next card";
+          btn.classList.remove("ghost");
+          $("#fyes").classList.add("hidden");
+          return;
+        }
+        const x = deck.shift(); deck.splice(Math.min(3, deck.length), 0, x); show();
+      };
+    };
+    show();
+  };
+}
+
+/* ================= CODE PRACTICE ================= */
+function basicChecks(src){
+  const res = [];
+  const stripped = src.replace(/"(\\.|[^"\\])*"/g,'""').replace(/'(\\.|[^'\\])*'/g,"''").replace(/\/\/.*$/gm,"").replace(/\/\*[\s\S]*?\*\//g,"");
+  const count = (s, c) => s.split(c).length - 1;
+  res.push([count(stripped,"{") === count(stripped,"}"), `Every { has a matching } (${count(stripped,"{")} open, ${count(stripped,"}")} close)`]);
+  res.push([count(stripped,"(") === count(stripped,")"), "Every ( has a matching )"]);
+  const all = stripped.split("\n").map(l => l.trim()).filter(Boolean);
+  const lines = all.filter((l, i) => !/^(\+|-|\*|\/|&&|\|\||\.|\?|:)/.test(all[i+1] || "")).filter(l => l &&!/[{};]$/.test(l) && !/^(if|else|for|while|do|switch|case|default|public|private|@|import|package|\}|\)|\.|\+|&&|\|\|)/.test(l) && !/[,(+&|?:]$/.test(l) && !/->/.test(l));
+  res.push([lines.length === 0, lines.length ? `Possibly missing ; after: <code>${esc(lines[0])}</code>` : "Statements end with ;"]);
+  if (/==\s*"/.test(stripped) || /"\s*==/.test(stripped)) res.push([false, "You compare a String with == — use .equals()"]);
+  if (/System\.out\.print/.test(src) && !/System\.out\.(print|println|printf)\s*\(/.test(src)) res.push([false, "Check your System.out.print spelling"]);
+  return res;
+}
+function code(){
+  const opts = CODE.map((c,i) => `<option value="${i}">${TOPICS[c.t].split(" ")[0]} · ${c.title}</option>`).join("");
+  app.innerHTML = `<div class="card"><h2>Code practice</h2><p class="lead">Write the full program yourself, like in the exam. "Check" looks for the parts the answer needs and common mistakes. It does not run Java, so compare with the model answer, or paste your code in IntelliJ to run it.</p>
+    <div class="row"><select id="cs">${opts}</select><button class="btn ghost" id="crand">Random exercise</button></div></div>
+    <div id="cbox"></div>`;
+  const render = i => {
+    const ex = CODE[i]; $("#cs").value = i;
+    const saved = load("code-"+i, null);
+    $("#cbox").innerHTML = `<div class="card">
+      <span class="tag">${TOPICS[ex.t]}</span><h3>${ex.title}</h3><p style="margin-top:0">${ex.task}</p>
+      ${ex.out ? `<div class="muted" style="font-size:14px">Example output:</div><pre><code>${esc(ex.out)}</code></pre>` : ""}
+      <textarea class="editor" id="ed" spellcheck="false">${esc(saved || ex.starter)}</textarea>
+      <div class="row" style="margin-top:10px">
+        <button class="btn" id="cchk">Check my code</button>
+        <button class="btn ghost" id="csol">Show model answer</button>
+        <button class="btn ghost" id="creset">Reset</button>
+        <button class="btn ghost" id="ccopy">Copy code</button>
+      </div>
+      <div id="cres"></div>
+      <div id="csolbox" class="hidden"><h3 style="margin-top:16px">Model answer</h3><pre><code>${esc(ex.sol)}</code></pre></div>
+    </div>`;
+    const ed = $("#ed");
+    ed.addEventListener("keydown", e => {
+      if (e.key === "Tab") { e.preventDefault(); const s = ed.selectionStart; ed.setRangeText("    ", s, ed.selectionEnd, "end"); }
+      if (e.key === "Enter") {
+        const s = ed.selectionStart, before = ed.value.slice(0, s), line = before.split("\n").pop();
+        let ind = (line.match(/^\s*/) || [""])[0]; if (/\{\s*$/.test(line)) ind += "    ";
+        e.preventDefault(); ed.setRangeText("\n" + ind, s, ed.selectionEnd, "end");
+      }
+    });
+    ed.addEventListener("input", () => store("code-"+i, ed.value));
+    $("#cchk").onclick = () => {
+      const src = ed.value;
+      const items = ex.checks.map(([re, label]) => [re.test(src), label]).concat(basicChecks(src));
+      const pass = items.filter(x => x[0]).length;
+      $("#cres").innerHTML = `<ul class="checks">${items.map(([ok,l]) => `<li><span class="pill" style="color:var(${ok?"--good":"--bad"})">${ok?"✓":"✗"}</span>${l}</li>`).join("")}</ul>
+        <p class="muted" style="margin-bottom:0">${pass} of ${items.length} checks passed. ${pass === items.length ? "Looks complete. Compare with the model answer to be sure." : "Fix the ✗ items, then check again."}</p>`;
+    };
+    $("#csol").onclick = () => $("#csolbox").classList.toggle("hidden");
+    $("#creset").onclick = () => { ed.value = ex.starter; store("code-"+i, null); $("#cres").innerHTML = ""; };
+    $("#ccopy").onclick = async () => { try { await navigator.clipboard.writeText(ed.value); $("#ccopy").textContent = "Copied"; } catch(e) { ed.select(); $("#ccopy").textContent = "Press Ctrl+C"; } setTimeout(() => { const b = $("#ccopy"); if (b) b.textContent = "Copy code"; }, 1500); };
+  };
+  $("#cs").onchange = () => render(+$("#cs").value);
+  $("#crand").onclick = () => render(Math.floor(Math.random() * CODE.length));
+  render(Math.floor(Math.random() * CODE.length));
+}
+
+/* ================= MOCK TEST ================= */
+function mock(){
+  app.innerHTML = `<div class="card"><h2>Mock test</h2><p class="lead">15 multiple choice + 8 fill in the blanks + 1 coding task, all random, with a 45-minute timer. Answers are only shown when you submit, like a real test.</p>
+    <button class="btn" id="tgo">Start mock test</button></div><div id="tbox"></div>`;
+  $("#tgo").onclick = () => {
+    const qs = shuffle(MCQ).slice(0, 15).map(q => ({...q, order: shuffle([...q.o.keys()]), pick:null}));
+    const bs = shuffle(BLANKS).slice(0, 8);
+    const ci = Math.floor(Math.random() * CODE.length), ex = CODE[ci];
+    let left = 45 * 60;
+    const box = $("#tbox");
+    box.innerHTML = `<div class="card row" style="justify-content:space-between;position:sticky;top:112px;z-index:2"><b>Mock test</b><span class="timer" id="tt">45:00</span></div>
+      <h3>Part 1 · Multiple choice</h3>
+      ${qs.map((q,i) => `<div class="card" data-t="${i}"><span class="tag">${TOPICS[q.t]}</span><div><b>${i+1}.</b> ${q.q}</div>${q.c?`<pre><code>${esc(q.c)}</code></pre>`:""}
+        <div class="opts">${q.order.map(k => `<button class="opt" data-k="${k}">${q.o[k]}</button>`).join("")}</div><div class="why hidden"></div></div>`).join("")}
+      <h3>Part 2 · Fill in the blanks</h3>
+      ${bs.map((b,i) => blankHTML(b, i)).join("")}
+      <h3>Part 3 · Coding</h3>
+      <div class="card"><span class="tag">${TOPICS[ex.t]}</span><h3>${ex.title}</h3><p style="margin-top:0">${ex.task}</p>
+        <textarea class="editor" id="ted" spellcheck="false">${esc(ex.starter)}</textarea><div id="tcres"></div><div id="tsol" class="hidden"><h3 style="margin-top:16px">Model answer</h3><pre><code>${esc(ex.sol)}</code></pre></div></div>
+      <div class="card"><button class="btn" id="tsub">Submit test</button></div>
+      <div class="card hidden" id="tres"></div>`;
+    box.querySelectorAll(".card[data-t]").forEach(card => {
+      const q = qs[+card.dataset.t];
+      card.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+        if (q.locked) return;
+        card.querySelectorAll(".opt").forEach(x => x.style.borderColor = ""); b.style.borderColor = "var(--accent)"; q.pick = +b.dataset.k;
+      });
+    });
+    const ted = $("#ted");
+    ted.addEventListener("keydown", e => { if (e.key === "Tab") { e.preventDefault(); const s = ted.selectionStart; ted.setRangeText("    ", s, ted.selectionEnd, "end"); } });
+    const tick = () => { left--; const m = Math.floor(left/60), s = left % 60; const el = $("#tt"); if (el) el.textContent = `${m}:${String(s).padStart(2,"0")}`; if (left <= 0) submit(); };
+    timerHandle = setInterval(tick, 1000);
+    const submit = () => {
+      stopTimer(); $("#tsub").disabled = true;
+      let mc = 0;
+      box.querySelectorAll(".card[data-t]").forEach(card => {
+        const q = qs[+card.dataset.t]; q.locked = true; const ok = q.pick === q.a; if (ok) mc++;
+        card.querySelectorAll(".opt").forEach(b => { b.disabled = true; b.style.borderColor = ""; const k = +b.dataset.k; if (k === q.a) b.classList.add("right"); else if (k === q.pick) b.classList.add("wrong"); });
+        const w = card.querySelector(".why"); w.innerHTML = `<b class="${ok?"ok":"no"}">${ok?"Correct.":q.pick===null?"No answer.":"Not quite."}</b> ${q.w}`; w.classList.remove("hidden");
+      });
+      const stats = {}; const add = (t, ok) => { stats[t] = stats[t] || [0,0]; stats[t][1]++; if (ok) stats[t][0]++; };
+      qs.forEach(q => add(q.t, q.pick === q.a));
+      let bl = 0; box.querySelectorAll(".card[data-b]").forEach(c => { const b = bs[+c.dataset.b], ok = checkBlank(c, b); if (ok) bl++; add(b.t, ok); });
+      const items = ex.checks.map(([re,l]) => [re.test(ted.value), l]).concat(basicChecks(ted.value));
+      const untouched = ted.value.trim() === ex.starter.trim();
+      const cp = items.filter(x => x[0]).length, codePts = untouched ? 0 : Math.round(cp / items.length * 5);
+      $("#tcres").innerHTML = `<ul class="checks">${items.map(([ok,l]) => `<li><span class="pill" style="color:var(${ok?"--good":"--bad"})">${ok?"✓":"✗"}</span>${l}</li>`).join("")}</ul>`;
+      $("#tsol").classList.remove("hidden");
+      const total = mc + bl + codePts, max = qs.length + bs.length + 5, pct = Math.round(total / max * 100);
+      const best = load("best", 0); if (pct > best) store("best", pct);
+      const r = $("#tres");
+      r.innerHTML = `<div class="score">${pct}%</div><p>Multiple choice <b>${mc}/${qs.length}</b> · Blanks <b>${bl}/${bs.length}</b> · Code checklist <b>${codePts}/5</b></p>
+        <p class="muted">${pct >= 75 ? "You're in good shape. Do one more coding exercise from M5." : pct >= 50 ? "Close. Redo the modules where you lost the most points." : "Go back to the easy notes, then try again."}</p>
+        <h3 style="margin-top:16px">Per module</h3>
+        <ul class="checks">${Object.keys(stats).sort().map(t => { const [g,n] = stats[t], p = Math.round(g/n*100); return `<li><span class="pill" style="color:var(${p>=70?"--good":"--bad"})">${p>=70?"✓":"✗"}</span>${TOPICS[t]}: <b>${g}/${n}</b> (${p}%)</li>`; }).join("")}</ul>
+        ${(() => { const weak = Object.keys(stats).filter(t => stats[t][0]/stats[t][1] < 0.7).sort((a,b) => stats[a][0]/stats[a][1] - stats[b][0]/stats[b][1]); return weak.length ? `<p class="muted">Practise next: <b>${weak.map(t => TOPICS[t]).join(", ")}</b>. Use Quiz and Fill in the blanks with that module selected.</p>` : `<p class="muted">No weak module this round.</p>`; })()}
+        <p class="muted" style="font-size:13px">Scroll up to see the right answers and explanations for every question.</p>
+        <button class="btn" id="tagain">New random mock test</button>`;
+      r.classList.remove("hidden"); $("#tagain").onclick = () => { go("mock"); $("#tgo").click(); };
+      r.scrollIntoView({behavior:"smooth"});
+    };
+    $("#tsub").onclick = submit;
+  };
+}
+
+/* ================= START ================= */
+const start = (location.hash || "").replace("#","");
+go(VIEWS[start] ? start : "home");
+window.addEventListener("hashchange", () => { const v = location.hash.replace("#",""); if (VIEWS[v]) go(v); });
+</script>
+</body>
+</html>
