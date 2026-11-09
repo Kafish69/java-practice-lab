@@ -4,6 +4,10 @@ A free practice site for the **KdG Applied Computer Science – Programming Fund
 
 **Open it:** https://kafish69.github.io/java-practice-lab/
 
+## Crash Course (start here)
+
+**https://kafish69.github.io/java-practice-lab/learn.html**: learn from zero in 10 blocks: simple explanations, what to write in your notebook and how many times, memory tricks and self-checks.
+
 ## What's inside
 
 - **Mock test** – 15 multiple choice + 8 fill in the blanks + 1 coding task, randomized every time, with a 45-minute timer and a per-module score breakdown

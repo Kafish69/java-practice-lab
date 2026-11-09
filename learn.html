@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Java Crash Course · Learn from zero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f5f2;--card:#ffffff;--ink:#1d1d1f;--muted:#6b6b70;--line:#e3e1dc;
+  --accent:#e2601f;--accent-soft:#fdeee5;--good:#1f8a4c;--good-soft:#e5f4ea;--bad:#c23b3b;--bad-soft:#fbe9e9;
+  --code-bg:#1e1f24;--code-ink:#e8e6e3;
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#141416;--card:#1c1c20;--ink:#ecebe8;--muted:#9a9aa0;--line:#2c2c32;--accent:#f0803f;--accent-soft:#33241b;--good:#4cc17e;--good-soft:#173022;--bad:#ef6b6b;--bad-soft:#371c1c;--code-bg:#0f1013;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.wrap{max-width:880px;margin:0 auto;padding:0 18px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0 8px}
+.brand{font-weight:700;font-size:18px;letter-spacing:-.01em}
+.brand span{color:var(--accent)}
+.sub{color:var(--muted);font-size:13px}
+nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px}
+nav button{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:500 14px Inter,sans-serif;cursor:pointer}
+nav button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+main{padding:22px 0 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+h2{font-size:22px;margin:0 0 4px;letter-spacing:-.01em}
+h3{font-size:17px;margin:0 0 10px}
+p.lead{color:var(--muted);margin:0 0 16px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;background:var(--accent);color:#fff;padding:10px 16px;border-radius:10px;font:600 14px Inter,sans-serif;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:default}
+select{padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:500 14px Inter,sans-serif}
+.tag{display:inline-block;font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:6px;margin-bottom:8px}
+pre,code,textarea{font-family:"JetBrains Mono",ui-monospace,monospace}
+pre{background:var(--code-bg);color:var(--code-ink);padding:12px 14px;border-radius:10px;overflow-x:auto;font-size:13.5px;line-height:1.5;margin:8px 0}
+code{background:var(--accent-soft);padding:1px 5px;border-radius:5px;font-size:.92em}
+pre code{background:none;padding:0}
+.opts{display:grid;gap:8px;margin-top:10px}
+.opt{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:11px 14px;border-radius:10px;font:15px Inter,sans-serif;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.right{background:var(--good-soft);border-color:var(--good)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.opt code{background:transparent}
+.why{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--bg);font-size:14.5px}
+.why b.ok{color:var(--good)} .why b.no{color:var(--bad)}
+input.blank{font:15px "JetBrains Mono",monospace;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);width:220px}
+input.blank.ok{border-color:var(--good);background:var(--good-soft)} input.blank.no{border-color:var(--bad);background:var(--bad-soft)}
+.progress{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin:6px 0 14px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.score{font-size:40px;font-weight:700;letter-spacing:-.02em}
+.flash{perspective:1200px;cursor:pointer;user-select:none}
+.flash .inner{position:relative;min-height:230px;transition:transform .45s;transform-style:preserve-3d}
+.flash.flip .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:26px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;font-size:19px;font-weight:500}
+.face.back{transform:rotateY(180deg);font-size:16.5px;font-weight:400;background:var(--accent-soft)}
+.face small{position:absolute;top:12px;left:16px;font-size:12px;color:var(--muted);font-weight:600}
+.face pre{text-align:left;font-size:13px;width:100%}
+textarea.editor{width:100%;min-height:340px;resize:vertical;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--line);border-radius:10px;padding:14px;font-size:13.5px;line-height:1.55;tab-size:4;outline:none}
+textarea.editor:focus{border-color:var(--accent)}
+ul.checks{list-style:none;padding:0;margin:10px 0 0}
+ul.checks li{padding:6px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+ul.checks li:last-child{border:0}
+.pill{display:inline-block;width:20px;font-weight:700}
+.muted{color:var(--muted)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.tile{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--card);cursor:pointer;text-align:left;color:var(--ink);font:inherit}
+.tile:hover{border-color:var(--accent)}
+.tile b{display:block;font-size:16px;margin-bottom:2px}
+.tile span{color:var(--muted);font-size:14px}
+.timer{font:600 15px "JetBrains Mono",monospace;color:var(--accent)}
+.hidden{display:none}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:30px 0}
+
+.urdu{border-left:4px solid var(--accent);background:var(--accent-soft);padding:8px 12px;border-radius:0 8px 8px 0;font-style:italic;margin:10px 0}
+table{border-collapse:collapse;width:100%;margin:8px 0;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--bg)}
+.write{border:2px solid var(--accent)}
+.wrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.wrow:last-child{border:0}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dot{width:34px;height:34px;border-radius:9px;border:1.5px solid var(--line);background:var(--card);color:var(--muted);font:600 13px Inter,sans-serif;cursor:pointer}
+.dot.on{background:var(--good);border-color:var(--good);color:#fff}
+.trick{background:var(--good-soft);border-color:var(--good)}
+details{border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0;background:var(--card)}
+details summary{cursor:pointer}
+details[open] summary{margin-bottom:8px}
+.ans{background:var(--bg);border-radius:8px;padding:8px 12px}
+nav button.ok::after{content:" ✓";color:var(--good)}
+nav button.on.ok::after{color:#7fe0a5}
+a{color:var(--accent)}
+.top .btn{flex:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div><div class="brand">Java <span>Crash Course</span></div><div class="sub">From zero to exam · notebook method · Programming Fundamentals T1</div></div>
+      <a class="btn ghost" href="index.html" style="text-decoration:none;font-size:13px">Practice lab →</a>
+    </div>
+    <div class="progress" style="margin:0 0 10px"><i id="gp"></i></div>
+    <nav id="nav"></nav>
+  </div>
+</header>
+<main class="wrap" id="app"></main>
+<footer>Made from the Programming Fundamentals slides, exercises and official solutions. Write it, don't just read it.</footer>
+
+<script>
+/* ============ CONTENT ============
+   each block: id, title, time, why, sections[{h, html}], writes[{what, code, n}], trick, check[{q, a}] */
+const BLOCKS = [
+{id:"start", title:"Start here", time:"5 min", plan:true},
+
+{id:"b1", title:"1 · Skeleton & theory", time:"30 min",
+why:"Every exam answer starts with this skeleton. If you can't write it blind, nothing else works.",
+sections:[
+{h:"The skeleton", html:`<pre><code>public class Hello {
+    public static void main(String[] args) {
+        System.out.println("Hello");
+    }
+}</code></pre>
+<table><tr><th>Part</th><th>Meaning</th></tr>
+<tr><td><code>public class Hello</code></td><td>The program's name. The file must be <code>Hello.java</code>.</td></tr>
+<tr><td><code>public static void main(String[] args)</code></td><td>The program <b>starts here</b>.</td></tr>
+<tr><td><code>{ }</code></td><td>Opens and closes a block. Every <code>{</code> needs a <code>}</code>.</td></tr>
+<tr><td><code>;</code></td><td>Ends every instruction, like a full stop.</td></tr>
+<tr><td><code>println</code> / <code>print</code></td><td>Print + new line / print and stay on the line.</td></tr></table>
+<p class="urdu">main = yahan se shuru. Har line ke end pe ; aur har { ka ek }.</p>`},
+{h:"How Java runs (theory)", html:`<ol><li>You write <code>Hello.java</code> (source code).</li><li><code>javac</code> (compiler) makes <code>Hello.class</code> = <b>bytecode</b>.</li><li>The <b>JVM</b> runs the bytecode. Every computer has a JVM → <b>platform independent</b>.</li></ol>
+<table><tr><th>Word</th><th>Meaning</th></tr><tr><td>JVM</td><td>Runs bytecode</td></tr><tr><td>JRE</td><td>JVM + libraries → <b>run</b> Java</td></tr><tr><td>JDK</td><td>JRE + tools (javac) → <b>write</b> Java</td></tr><tr><td>IDE</td><td>The app you code in (IntelliJ)</td></tr></table>
+<p>Compiled (C++): fast, but a different file per processor. Interpreted (Python): runs anywhere, slow. Java: <b>both</b>, compiled to bytecode, then interpreted by the JVM.</p>`}],
+writes:[{what:"The full skeleton (class + main + println)", n:5},{what:"javac → .class (bytecode) → JVM runs it", n:3},{what:"JVM ⊂ JRE ⊂ JDK, with one line each", n:3}],
+trick:"<b>J-D-K = Java Development Kit</b>: D for Develop, so that's the one with the compiler. JRE has R for Run. Picture it as nesting dolls: JDK holds the JRE, which holds the JVM.",
+check:[{q:"Write the skeleton of a program <code>Test</code> that prints <code>I will pass</code>.",a:`<pre><code>public class Test {
+    public static void main(String[] args) {
+        System.out.println("I will pass");
+    }
+}</code></pre>`},{q:"Which file does javac make from Test.java?",a:"Test.class (bytecode)"},{q:"You only want to RUN Java. JRE or JDK?",a:"JRE (JDK is for writing/compiling)."}]},
+
+{id:"b2", title:"2 · Variables & types", time:"35 min",
+why:"Every question uses variables. Also a classic theory question: name the 8 types / spot the wrong variable name.",
+sections:[
+{h:"A variable = a labelled box", html:`<pre><code>int age = 19;            // whole number
+double price = 4.99;     // decimal
+String name = "Kashif";  // text  (capital S, double quotes)
+char letter = 'A';       // one character (single quotes)
+boolean ok = true;       // true or false
+
+age = 20;                // change later: no type again</code></pre>
+<p class="urdu">Pehli dafa type likho (int, double…), baad mein sirf naam.</p>`},
+{h:"The 8 primitive types", html:`<table><tr><th>Type</th><th>For</th><th>Example</th></tr>
+<tr><td>byte</td><td>tiny whole number (−128..127)</td><td>100</td></tr><tr><td>short</td><td>small whole number</td><td>30000</td></tr>
+<tr><td><b>int</b></td><td>whole number (±2 billion)</td><td>42</td></tr><tr><td><b>long</b></td><td>huge whole number, ends in L</td><td>8000000000L</td></tr>
+<tr><td>float</td><td>decimal, ends in F</td><td>3.25F</td></tr><tr><td><b>double</b></td><td>decimal</td><td>13.25</td></tr>
+<tr><td><b>boolean</b></td><td>true / false</td><td>true</td></tr><tr><td><b>char</b></td><td>one character</td><td>'A' or 65</td></tr></table>
+<p>String is NOT one of them: it's an object (a class).</p>`},
+{h:"Naming rules & constants", html:`<ul><li>Letters, digits, <code>_</code>, <code>$</code>. No spaces, no <code>-</code>.</li><li>Can't start with a digit: <code>1name</code> ✗</li><li>Can't be a keyword: <code>int class;</code> ✗</li><li>Case-sensitive: <code>age</code> ≠ <code>Age</code></li><li>Style: <code>firstName</code> (camelCase), constants <code>MAX_AGE</code></li></ul>
+<pre><code>final int MAX_AGE = 120;   // final = locked
+MAX_AGE = 130;             // COMPILE ERROR</code></pre>
+<p>Escape characters: <code>\\n</code> new line · <code>\\t</code> tab · <code>\\"</code> quote inside text.</p>`}],
+writes:[{what:"The 8 types in order: byte short int long float double boolean char", n:5},{what:"5 declarations (int, double, String, char, boolean)", n:3},{what:"final int MAX_AGE = 120;  + the 3 naming rules", n:2}],
+trick:"Order of the 8 types: <b>\"Big Sharks Ice Lions, Fish Dive, Bears Chill\"</b> → byte short int long · float double · boolean char. Sizes go 1, 2, 4, 8 bytes for the four whole-number types.",
+check:[{q:"Which names are wrong: <code>myAge</code>, <code>2fast</code>, <code>first name</code>, <code>_total</code>?",a:"2fast (starts with a digit) and first name (space)."},{q:"What happens with <code>final int X = 5; X = 6;</code>?",a:"Compile error: a final can't be changed."},{q:"Is String a primitive type?",a:"No, it's a class (object)."}]},
+
+{id:"b3", title:"3 · Maths & the traps", time:"40 min",
+why:"\"What does this print?\" questions live here. Int division and ++ are tested almost every time.",
+sections:[
+{h:"Operators", html:`<table><tr><th>Symbol</th><th>Meaning</th><th>Example</th><th>Result</th></tr>
+<tr><td>+ - *</td><td>add, subtract, multiply</td><td>7 * 2</td><td>14</td></tr>
+<tr><td>/</td><td>divide</td><td>7 / 2</td><td><b>3</b> !!</td></tr>
+<tr><td>%</td><td>remainder</td><td>7 % 2</td><td>1</td></tr></table>`},
+{h:"⚠️ Trap 1: int / int = int", html:`<pre><code>int a = 10, b = 3;
+a / b             // 3       (decimals thrown away)
+a / 3.0           // 3.333   (one side is a double)
+(double) a / b    // 3.333   (cast first)
+(int) 9.99        // 9       (cast CUTS, never rounds)</code></pre>
+<p class="urdu">int / int ka jawab int. Point ke baad sab gayab.</p>`},
+{h:"% remainder: what's left over", html:`<p>7 sweets for 2 people: each gets 3, <b>1 left</b> → <code>7 % 2 = 1</code>. 17 % 5 = 2.</p>
+<table><tr><th>Need</th><th>Code</th><th>1234 →</th></tr>
+<tr><td>Even?</td><td><code>n % 2 == 0</code></td><td>true</td></tr>
+<tr><td>Last digit</td><td><code>n % 10</code></td><td>4</td></tr>
+<tr><td>Remove last digit</td><td><code>n / 10</code></td><td>123</td></tr>
+<tr><td>Hundreds digit</td><td><code>n / 100 % 10</code></td><td>2</td></tr></table>`},
+{h:"⚠️ Trap 2: x++ vs ++x", html:`<pre><code>int x = 5;
+int a = x++;   // a = 5, x = 6   use FIRST, then add
+int y = 5;
+int b = ++y;   // y = 6, b = 6   add FIRST, then use</code></pre>
+<p>On its own line, <code>x++;</code> and <code>++x;</code> do the same. Shortcut: <code>total += 5</code> = <code>total = total + 5</code>.</p>`},
+{h:"⚠️ Trap 3: text + numbers", html:`<pre><code>"Total: " + 2 + 3      // "Total: 23"   glued as text
+"Total: " + (2 + 3)    // "Total: 5"
+3 + 7 + " hi " + 3 + 7 // "10 hi 37"    left to right</code></pre>
+<p>Overflow: <code>int</code> max is about 2.1 billion. 2 billion + 2 billion in int → negative number. Fix: <code>long sum = (long) a + b;</code></p>
+<p>Comparing gives true/false: <code>== != &gt; &lt; &gt;= &lt;=</code>. <code>=</code> puts a value in, <code>==</code> asks "equal?".</p>`}],
+writes:[{what:"7 / 2 = 3 · 7 / 2.0 = 3.5 · (int) 9.99 = 9", n:5},{what:"The % table (even, last digit, remove digit, hundreds)", n:3},{what:"x++ (use then add) vs ++x (add then use) with the example", n:5},{what:"\"Total: \" + 2 + 3 → Total: 23", n:2}],
+trick:"<b>x++ → the ++ comes AFTER → it adds AFTER.</b> ++x → the ++ comes BEFORE → it adds BEFORE. Wherever the ++ sits is when it happens.",
+check:[{q:"<code>17 / 5</code>, <code>17 % 5</code>, <code>17 / 5.0</code>?",a:"3 · 2 · 3.4"},{q:"<code>int x = 4; int y = x++;</code> → x and y?",a:"y = 4, x = 5"},{q:"<code>System.out.println(\"A\" + 1 + 2);</code>",a:"A12"},{q:"Last digit of 2026 with %?",a:"2026 % 10 = 6"}]},
+
+{id:"b4", title:"4 · Reading input", time:"25 min",
+why:"Almost every program asks the user something. 3 lines you must know blind.",
+sections:[
+{h:"Scanner in 3 steps", html:`<pre><code>import java.util.Scanner;                    // 1. at the very top
+
+public class Greet {
+    public static void main(String[] args) {
+        Scanner kb = new Scanner(System.in);  // 2. make the reader
+        System.out.print("Name: ");
+        String name = kb.nextLine();          // 3. read
+        System.out.print("Age: ");
+        int age = kb.nextInt();
+        System.out.println("Hi " + name + ", you are " + age);
+    }
+}</code></pre>
+<table><tr><th>Want</th><th>Write</th></tr><tr><td>whole line</td><td><code>kb.nextLine()</code></td></tr><tr><td>one word</td><td><code>kb.next()</code></td></tr><tr><td>whole number</td><td><code>kb.nextInt()</code></td></tr><tr><td>decimal</td><td><code>kb.nextDouble()</code></td></tr><tr><td>true/false</td><td><code>kb.nextBoolean()</code></td></tr><tr><td>one char</td><td><code>kb.next().charAt(0)</code></td></tr><tr><td>is it a number?</td><td><code>kb.hasNextInt()</code></td></tr></table>`},
+{h:"⚠️ The nextInt + nextLine trap", html:`<pre><code>int age = kb.nextInt();
+kb.nextLine();                 // eat the leftover Enter!
+String name = kb.nextLine();   // now it works</code></pre>
+<p class="urdu">nextInt ke baad Enter peeche reh jata hai. Ek extra nextLine() se usay khatam karo.</p>`}],
+writes:[{what:"import java.util.Scanner; + Scanner kb = new Scanner(System.in);", n:5},{what:"The 6 read methods (nextLine, next, nextInt, nextDouble, nextBoolean, next().charAt(0))", n:3},{what:"The nextInt → extra nextLine() fix", n:3}],
+trick:"<b>I-N-R</b>: Import, New, Read. Always in that order. And: <b>after nextInt, eat the Enter</b>.",
+check:[{q:"Write a program that reads two ints and prints their sum.",a:`<pre><code>import java.util.Scanner;
+public class Sum {
+    public static void main(String[] args) {
+        Scanner kb = new Scanner(System.in);
+        int a = kb.nextInt();
+        int b = kb.nextInt();
+        System.out.println("Sum: " + (a + b));
+    }
+}</code></pre>`},{q:"Why does nextLine() return \"\" after nextInt()?",a:"The Enter key stays in the buffer; nextLine reads that empty line."}]},
+
+{id:"b5", title:"5 · if / else & logic", time:"35 min",
+why:"Decisions are in every exercise and in every validating setter of a class.",
+sections:[
+{h:"if / else if / else", html:`<pre><code>if (age < 2) {
+    System.out.println("Baby");
+} else if (age <= 12) {
+    System.out.println("Child");
+} else if (age <= 17) {
+    System.out.println("Teenager");
+} else {
+    System.out.println("Adult");
+}</code></pre>
+<p>Java checks top to bottom and runs only the <b>first true</b> one. Always use <code>{ }</code>, and never put <code>;</code> after <code>if (...)</code>.</p>
+<p class="urdu">if = agar, else = warna. Pehli sach condition chalegi, baqi skip.</p>`},
+{h:"&& || !", html:`<table><tr><th>Symbol</th><th>Meaning</th><th>Example</th></tr><tr><td>&&</td><td>AND: both true</td><td><code>age &gt;= 18 &amp;&amp; age &lt;= 67</code></td></tr><tr><td>||</td><td>OR: at least one</td><td><code>age &lt; 0 || age &gt; 120</code></td></tr><tr><td>!</td><td>NOT</td><td><code>!name.isEmpty()</code></td></tr></table>
+<p>Range check (you'll use this in every setter): <code>if (x &gt;= 0 &amp;&amp; x &lt;= 100)</code>. Outside the range: <code>if (x &lt; 0 || x &gt; 100)</code>.</p>`},
+{h:"Short if (ternary)", html:`<pre><code>String r = score >= 10 ? "Pass" : "Fail";   // condition ? yes : no</code></pre><p>It <b>returns a value</b>; an if statement doesn't.</p>`}],
+writes:[{what:"The 4-step age ladder (if / else if / else if / else)", n:3},{what:"Inside range: x >= 0 && x <= 100 · Outside: x < 0 || x > 100", n:5},{what:"condition ? yes : no", n:3}],
+trick:"<b>&& = \"and both\"</b> (two &s, two things). <b>|| looks like two doors</b>: going through either one is enough.",
+check:[{q:"Read a temperature: &lt;10 Cold, 10–24 Nice, ≥25 Hot.",a:`<pre><code>if (t < 10) {
+    System.out.println("Cold");
+} else if (t < 25) {
+    System.out.println("Nice");
+} else {
+    System.out.println("Hot");
+}</code></pre>`},{q:"<code>int a = 1, b = 2;</code> Is <code>(b != 1) || (a != 1)</code> true?",a:"true (b != 1 is true, so OR is true)."}]},
+
+{id:"b6", title:"6 · switch", time:"25 min",
+why:"Days in month, scrabble scores, grade categories (old exam question 06.02 uses it).",
+sections:[
+{h:"New arrow style (use this)", html:`<pre><code>switch (day) {
+    case 1 -> System.out.println("Monday");
+    case 6, 7 -> System.out.println("Weekend");
+    default -> System.out.println("Other");
+}</code></pre>`},
+{h:"switch that gives back a value", html:`<pre><code>int days = switch (month) {
+    case 4, 6, 9, 11 -> 30;
+    case 2 -> leap ? 29 : 28;
+    default -> 31;          // REQUIRED
+};                          // note the ;</code></pre>
+<p>Block with several lines: <code>default -> { System.out.println("?"); yield 0; }</code></p>`},
+{h:"Old style (recognise it)", html:`<pre><code>switch (day) {
+    case 1:
+        System.out.println("Monday");
+        break;               // without break → falls into the next case!
+    default:
+        System.out.println("Other");
+}</code></pre>`},
+{h:"Leap year (learn by heart)", html:`<pre><code>boolean leap = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;</code></pre>`}],
+writes:[{what:"Arrow switch with case 6, 7 -> and default", n:3},{what:"int days = switch (month) { ... };", n:3},{what:"Leap year line", n:5}],
+trick:"Leap year = <b>\"4 yes, 100 no, 400 yes again\"</b>. Switch expression = <b>D-S</b>: it needs a Default and ends with a Semicolon.",
+check:[{q:"Why must a switch expression have <code>default</code>?",a:"It must always give a value, even for unexpected input."},{q:"What happens in an old switch without <code>break</code>?",a:"Fall through: the next case runs too."}]},
+
+{id:"b7", title:"7 · Loops", time:"45 min",
+why:"Repeating, counting, validating input. Big in every exercise.",
+sections:[
+{h:"for: you know how many times", html:`<pre><code>for (int i = 1; i <= 5; i++) {
+    System.out.println(i);        // 1 2 3 4 5
+}</code></pre><p><b>start ; keep going while ; step</b>. The step can be <code>i--</code>, <code>i += 2</code>, <code>i *= 5</code>.</p>`},
+{h:"while: you don't know how many times", html:`<pre><code>int guess = 0;
+while (guess != 7) {
+    guess = kb.nextInt();
+}</code></pre>`},
+{h:"do-while: at least once", html:`<pre><code>String again;
+do {
+    System.out.println("Playing...");
+    again = kb.nextLine();
+} while (again.equals("yes"));   // ; at the end!</code></pre>
+<table><tr><th>Situation</th><th>Loop</th></tr><tr><td>Count 1 to 10</td><td>for</td></tr><tr><td>Ask until input is valid</td><td>while / do-while</td></tr><tr><td>Menu / play again</td><td>do-while</td></tr></table>`},
+{h:"Patterns you'll need", html:`<pre><code>int sum = 0;                                // a sum starts at 0
+for (int i = 1; i <= 10; i++) { sum += i; }
+
+long fact = 1;                              // a product starts at 1
+for (int i = 1; i <= 5; i++) { fact *= i; }
+
+int count = 0;                              // counting
+for (int i = 1; i < 100; i++) {
+    if (i % 7 == 0) { count++; }
+}
+
+for (int r = 0; r < 3; r++) {               // nested: rows
+    for (int c = 0; c < 4; c++) {           //         columns
+        System.out.print("*");
+    }
+    System.out.println();
+}</code></pre>
+<p><code>break</code> = leave the loop · <code>continue</code> = skip to the next round. <b>Scope:</b> a variable made inside <code>{ }</code> only exists inside them.</p>
+<p class="urdu">for jab pata ho kitni dafa, while jab na pata ho, do-while kam az kam ek dafa.</p>`}],
+writes:[{what:"for (int i = 1; i <= 5; i++) { }", n:5},{what:"while + do-while (with the ; at the end)", n:3},{what:"Sum pattern (start 0) and product pattern (start 1)", n:3},{what:"Nested loop that prints a 3×4 block of *", n:2}],
+trick:"for = <b>S-C-S</b>: Start ; Condition ; Step. A <b>sum starts at 0</b> and a <b>product starts at 1</b>, because anything × 0 = 0.",
+check:[{q:"Print the even numbers 2 to 20.",a:`<pre><code>for (int i = 2; i <= 20; i += 2) {
+    System.out.print(i + " ");
+}</code></pre>`},{q:"How many times does <code>for (int i = 0; i &lt; 5; i++)</code> run?",a:"5 times (0,1,2,3,4)"}]},
+
+{id:"b8", title:"8 · Methods", time:"30 min",
+why:"Classes are built from methods. You must read and write a method signature.",
+sections:[
+{h:"A method = a mini machine", html:`<pre><code>public static int add(int a, int b) {   // 2 ints in → 1 int out
+    return a + b;
+}
+
+public static void greet(String name) { // void = nothing comes back
+    System.out.println("Hello " + name);
+}
+
+// in main:
+int total = add(3, 4);    // 7
+greet("Kashif");</code></pre>
+<p>Read the first line: <b>access</b> (public static) → <b>return type</b> (int / void) → <b>name</b> → <b>(parameters)</b>.</p>
+<ul><li><code>return</code> sends the answer back and stops the method.</li><li><code>void</code> = nothing back → <code>int x = greet("A");</code> is an ERROR.</li><li>Parameters = in the method's first line. Arguments = the values you pass: <code>add(3, 4)</code>.</li></ul>
+<p class="urdu">Method machine hai: andar kuch daalo, return se jawab wapas. void = kuch wapas nahi.</p>`}],
+writes:[{what:"public static int add(int a, int b) { return a + b; }", n:5},{what:"A void method + calling both from main", n:3},{what:"\"access, return type, name, (parameters)\"", n:2}],
+trick:"<b>\"Pretty Rabbits Need Peas\"</b> → Public static · Return type · Name · Parameters. That's the order of every method header.",
+check:[{q:"Write <code>isEven(int n)</code> returning true for even numbers.",a:`<pre><code>public static boolean isEven(int n) {
+    return n % 2 == 0;
+}</code></pre>`},{q:"Why does <code>int w = rect.setWidth(5);</code> not compile if setWidth is void?",a:"A void method gives no value to store."}]},
+
+{id:"b9", title:"9 · Objects: String, StringBuilder, Random, printf", time:"60 min",
+why:"Lots of theory + output questions: == vs equals, immutable Strings, Random ranges.",
+sections:[
+{h:"Class vs object", html:`<p><b>Class</b> = blueprint (cookie cutter). <b>Object</b> = real thing made with <code>new</code> (a cookie). The variable holds a <b>reference</b> (an address) to the object.</p>
+<pre><code>Random r = new Random();     // new → calls the constructor
+Player p2 = p1;              // copies the REFERENCE: both point to the same object</code></pre>
+<p>Garbage collection frees objects nobody points to anymore. Import: <code>java.util</code> (Scanner, Random) needs import; <code>java.lang</code> (String, Math) doesn't.</p>`},
+{h:"Random", html:`<pre><code>import java.util.Random;
+Random r = new Random();
+r.nextInt(6)          // 0..5   (last number NOT included)
+r.nextInt(6) + 1      // 1..6   a die
+r.nextInt(1, 7)       // 1..6   same
+r.nextDouble()        // 0.0..0.999
+new Random(42)        // seed → same numbers every run</code></pre>
+<p><b>Any range:</b> <code>r.nextInt(max - min + 1) + min</code></p>`},
+{h:"String: text that never changes", html:`<pre><code>String s = "Hello";
+s.toUpperCase();          // does NOTHING to s
+s = s.toUpperCase();      // correct: save it</code></pre>
+<table><tr><th>s = "Hello"</th><th>Result</th></tr><tr><td><code>s.length()</code></td><td>5</td></tr><tr><td><code>s.charAt(0)</code></td><td>'H' (positions start at 0)</td></tr><tr><td><code>s.charAt(s.length() - 1)</code></td><td>'o' last</td></tr><tr><td><code>s.substring(1, 3)</code></td><td>"el" (3 not included)</td></tr><tr><td><code>s.indexOf("l")</code></td><td>2 (−1 = not found)</td></tr><tr><td><code>s.equals("Hello")</code></td><td>true</td></tr><tr><td><code>s.equalsIgnoreCase("hello")</code></td><td>true</td></tr><tr><td><code>s.compareTo("World")</code></td><td>negative (H before W)</td></tr><tr><td><code>s.replace('l','x')</code> · <code>contains</code> · <code>isEmpty</code> · <code>strip</code></td><td></td></tr></table>`},
+{h:"⚠️ == vs equals (always on the exam)", html:`<pre><code>String a = "abc";
+String c = new String("abc");
+a == c          // false  → compares the REFERENCE (address)
+a.equals(c)     // true   → compares the TEXT</code></pre>
+<p><b>Strings: always <code>.equals()</code>.</b> Single chars: <code>==</code> is fine (<code>s.charAt(i) == 'e'</code>).</p>
+<pre><code>int count = 0;                              // loop over every letter
+for (int i = 0; i < s.length(); i++) {
+    if (s.charAt(i) == 'e') { count++; }
+}</code></pre>`},
+{h:"StringBuilder: text you CAN change", html:`<pre><code>StringBuilder sb = new StringBuilder();
+sb.append("Hi").append(" there");    // chaining
+sb.reverse();
+String result = sb.toString();       // back to String
+
+// palindrome:
+new StringBuilder(w).reverse().toString().equals(w)</code></pre>
+<p>Other: <code>insert</code>, <code>setCharAt</code>, <code>deleteCharAt</code>, <code>length</code>.</p>`},
+{h:"printf", html:`<pre><code>System.out.printf("%s is %d and %.2f m%n", "Ali", 19, 1.785);
+// Ali is 19 and 1,79 m</code></pre>
+<p><code>%d</code> whole · <code>%f</code> / <code>%.2f</code> decimal · <code>%s</code> text · <code>%c</code> char · <code>%b</code> boolean · <code>%n</code> new line · <code>%5d</code> width 5 right · <code>%-10s</code> width 10 left · <code>%%</code> a % sign. <code>String.format(...)</code> returns the String instead of printing.</p>
+<p>Math (no new): <code>Math.PI · abs · pow(2,3) = 8.0 · sqrt · max · min · round</code></p>`}],
+writes:[{what:"== compares references, equals compares text (with the a/c example)", n:5},{what:"r.nextInt(max - min + 1) + min  and  die = r.nextInt(6) + 1", n:5},{what:"The String methods table", n:2},{what:"Loop over every char + count 'e'", n:3},{what:"Palindrome line with StringBuilder", n:3},{what:"%d %.2f %s %n", n:3}],
+trick:"<b>\"== checks the house, equals checks what's inside.\"</b> Two houses with the same furniture: == says different houses, equals says same furniture. For Random: <b>\"how many numbers, then shift up\"</b> → (max−min+1) + min.",
+check:[{q:"<code>String s = \"abc\"; s.toUpperCase(); System.out.println(s);</code>",a:"abc (Strings never change; the result was thrown away)."},{q:"Random number from 10 to 20?",a:"r.nextInt(11) + 10"},{q:"<code>\"Mary\".compareTo(\"John\")</code> positive or negative?",a:"Positive (M comes after J)."}]},
+
+{id:"b10", title:"10 · Writing a class (MOST IMPORTANT)", time:"75 min",
+why:"Both old exam questions (Chess club, Student Grade Evaluator) are this. Expect most of your points here.",
+sections:[
+{h:"Always the same 5 steps", html:`<ol><li><b>Attributes</b>: private</li><li><b>Setters</b>: change + CHECK</li><li><b>Getters</b>: return</li><li><b>Constructors</b>: call the setters</li><li><b>toString</b>: return text</li></ol>
+<p class="urdu">Har class ka same recipe. Ye 5 steps yaad, to exam ka bara hissa ho gaya.</p>`},
+{h:"The full template (learn THIS one)", html:`<pre><code>public class Phone {
+    // 1. attributes: always private
+    private String brand;
+    private int battery;
+
+    // 4. constructors
+    public Phone(String brand, int battery) {   // same name as class, NO return type
+        setBrand(brand);                         // use setters → checks run!
+        setBattery(battery);
+    }
+
+    public Phone(String brand) {
+        this(brand, 100);                        // call the other constructor, FIRST line
+    }
+
+    // 2. setters: change + check
+    public void setBrand(String brand) {
+        if (brand != null && !brand.isEmpty()) {
+            this.brand = brand;                  // this.brand = the object's box
+        } else {
+            System.out.println("Invalid brand!");
+        }
+    }
+
+    public void setBattery(int battery) {
+        if (battery >= 0 && battery <= 100) {
+            this.battery = battery;
+        } else {
+            System.out.println("Invalid battery!");
+        }
+    }
+
+    // 3. getters
+    public String getBrand() {
+        return brand;
+    }
+
+    public int getBattery() {
+        return battery;
+    }
+
+    // extra method
+    public void charge(int amount) {
+        setBattery(Math.min(100, battery + amount));
+    }
+
+    // 5. toString: RETURN, don't print
+    @Override
+    public String toString() {
+        return brand + " (" + battery + "%)";
+    }
+}</code></pre>
+<pre><code>// using it (in another class with main)
+Phone p = new Phone("Samsung", 80);
+Phone bad = new Phone("Nokia", 500);   // prints Invalid battery! → battery stays 0
+System.out.println(p);                 // Samsung (80%)   println calls toString</code></pre>`},
+{h:"Why each rule", html:`<table><tr><th>Rule</th><th>Why</th></tr>
+<tr><td>Attributes <b>private</b></td><td>Nobody can write <code>battery = -500</code> from outside = <b>encapsulation</b></td></tr>
+<tr><td><b>this.</b>battery = battery</td><td>Without <code>this.</code> the parameter is copied into itself and nothing changes</td></tr>
+<tr><td>Constructor calls the <b>setter</b></td><td>So <code>new Phone("x", 500)</code> is also checked</td></tr>
+<tr><td>Constructor: <b>no return type</b></td><td><code>public void Phone()</code> would be a method, not a constructor</td></tr>
+<tr><td><b>this(...)</b> first line</td><td>Reuse the other constructor; Java requires it first</td></tr>
+<tr><td>toString <b>returns</b></td><td>Without it, println shows <code>Phone@1b6d3586</code></td></tr></table>`},
+{h:"Rules they ask as theory", html:`<ul><li>Default values: int → 0 · double → 0.0 · boolean → false · String/objects → <b>null</b>. Local variables get NO default.</li><li>No constructor written → Java gives a free empty one. <b>Any</b> constructor written → the free one disappears (<code>new Phone()</code> then fails).</li><li><b>Overloading</b> = same name, different parameters (like the 2 constructors). Return type doesn't count.</li><li><code>private</code> = this class only · (nothing) = package · <code>protected</code> = + subclasses · <code>public</code> = everyone.</li><li>A method can take another object of the same class: <code>public boolean play(Player other)</code>, and may read <code>other.winRatio</code> even though it's private.</li></ul>`},
+{h:"Old exam question in 6 lines of thinking", html:`<p><i>"Player: name (not empty), birthYear (not in the future, max 120 years ago), winRatio 0..1, retired. play() returns true if a random number is lower than winRatio. Print 'Invalid age!' / 'Invalid winratio!'."</i></p>
+<ol><li>Attributes: <code>private String name; private int birthYear; private float winRatio; private boolean retired;</code></li><li>Setters with checks: <code>setName</code>, <code>setAge</code> (year range), <code>setWinRatio</code> (0..1)</li><li>Constructor with all 4 → calls the setters</li><li><code>public boolean play() { return new Random().nextDouble() &lt; winRatio; }</code></li><li><code>public boolean play(Player other)</code>: overloading, compare winRatio − random for both</li><li>toString: <code>name + " (" + birthYear + ": Winratio: " + winRatio + " " + (retired ? "retired" : "active") + ".)"</code></li></ol>`}],
+writes:[{what:"The FULL Phone class from memory (then compare)", n:3},{what:"A setter with if/else check + this.", n:5},{what:"Constructor calling setters + this(...) constructor", n:3},{what:"toString with @Override and return", n:3},{what:"Default values + the 'any constructor removes the free one' rule", n:2}],
+trick:"<b>\"PS-GCT\" → \"Please Save Good Code Today\"</b>: Private attributes · Setters · Getters · Constructors · toString. Say it before every class question. And: <b>\"this. = THIS object's box.\"</b>",
+check:[{q:"Write a class <code>Student</code>: private name, grade (0–20, else print Invalid grade!), constructor using the setter, getter for grade, toString → <code>Ali: 14/20</code>.",a:`<pre><code>public class Student {
+    private String name;
+    private int grade;
+
+    public Student(String name, int grade) {
+        this.name = name;
+        setGrade(grade);
+    }
+
+    public void setGrade(int grade) {
+        if (grade >= 0 && grade <= 20) {
+            this.grade = grade;
+        } else {
+            System.out.println("Invalid grade!");
+        }
+    }
+
+    public int getGrade() {
+        return grade;
+    }
+
+    @Override
+    public String toString() {
+        return name + ": " + grade + "/20";
+    }
+}</code></pre>`},{q:"<code>new Phone(\"X\", 500)</code>: what's the battery afterwards?",a:"0 (the setter refused 500, so the default stays)."},{q:"You wrote only <code>Point(int x, int y)</code>. Does <code>new Point()</code> work?",a:"No, compile error: the free default constructor is gone."}]},
+
+{id:"exam", title:"Exam day checklist", time:"10 min", exam:true}
+];
+
+/* ============ HELPERS ============ */
+const $ = s => document.querySelector(s);
+function load(k, d){ try { const v = localStorage.getItem("crash-"+k); return v ? JSON.parse(v) : d; } catch(e){ return d; } }
+function store(k, v){ try { localStorage.setItem("crash-"+k, JSON.stringify(v)); } catch(e){} }
+let state = load("state", {writes:{}, done:{}});
+const save = () => { store("state", state); updateProgress(); };
+
+function updateProgress(){
+  const learn = BLOCKS.filter(b => b.writes);
+  const done = learn.filter(b => state.done[b.id]).length;
+  $("#gp").style.width = (done / learn.length * 100) + "%";
+  document.querySelectorAll("#nav button").forEach(btn => {
+    const id = btn.dataset.v; btn.classList.toggle("ok", !!state.done[id]);
+  });
+}
+
+/* ============ NAV ============ */
+$("#nav").innerHTML = BLOCKS.map(b => `<button data-v="${b.id}">${b.id.startsWith("b") ? b.title.split(" · ")[0] : b.title}</button>`).join("");
+document.querySelectorAll("#nav button").forEach(b => b.onclick = () => go(b.dataset.v));
+function go(id){
+  const b = BLOCKS.find(x => x.id === id) || BLOCKS[0];
+  document.querySelectorAll("#nav button").forEach(x => x.classList.toggle("on", x.dataset.v === b.id));
+  b.plan ? renderStart() : b.exam ? renderExam() : renderBlock(b);
+  window.scrollTo(0, 0);
+  try { history.replaceState(null, "", "#" + b.id); } catch(e){}
+  updateProgress();
+}
+
+/* ============ VIEWS ============ */
+function renderStart(){
+  $("#app").innerHTML = `
+  <div class="card"><h2>From zero to exam, tonight</h2>
+  <p class="lead">10 blocks. Each one: <b>read</b> it → <b>write</b> the marked things in your notebook the number of times shown (tap the counter each time) → do the <b>check</b> → tick <b>Block done</b>.</p>
+  <p class="urdu">Sirf parhne se yaad nahi hota. Haath se likhna hai, ginti ke saath. Phir check, phir agla block.</p></div>
+  <div class="card"><h3>Why writing works</h3>
+  <ul><li>Writing by hand forces your brain to <b>produce</b> it, not just recognise it. The exam has no IntelliJ, so this is exactly the skill you need.</li>
+  <li>Write it <b>without looking</b> after the first time. Look only to check.</li>
+  <li>Say it out loud while writing: "public static int add…". Two senses = stronger memory.</li></ul></div>
+  <div class="card"><h3>Tonight's plan</h3>
+  <table><tr><th>Time</th><th>Blocks</th></tr>
+  ${BLOCKS.filter(b => b.writes).map(b => `<tr><td>${b.time}</td><td><a href="#${b.id}" data-go="${b.id}">${b.title}</a>${state.done[b.id] ? " ✓" : ""}</td></tr>`).join("")}
+  <tr><td>—</td><td><b>Sleep at least 5 hours.</b> Memory is saved while you sleep.</td></tr>
+  <tr><td>Train</td><td>Read your notebook + the Exam day checklist</td></tr></table>
+  <p class="muted" style="margin-bottom:0">Total ≈ 6½ hours. Blocks 9 and 10 matter most; if you're short on time, never skip block 10.</p></div>
+  <div class="row"><button class="btn" data-go="b1">Start block 1 →</button></div>`;
+  document.querySelectorAll("[data-go]").forEach(a => a.onclick = e => { e.preventDefault(); go(a.dataset.go); });
+}
+
+function renderBlock(b){
+  const i = BLOCKS.indexOf(b), next = BLOCKS[i+1];
+  $("#app").innerHTML = `
+  <div class="card"><span class="tag">⏱ ${b.time}</span><h2>${b.title}</h2><p class="lead" style="margin:0"><b>Why it matters:</b> ${b.why}</p></div>
+  ${b.sections.map(s => `<div class="card"><h3>${s.h}</h3>${s.html}</div>`).join("")}
+  <div class="card write"><h3>✍️ Write this in your notebook</h3>
+  <p class="muted">First time: copy it. After that: <b>from memory</b>, then check. Tap the box after each time.</p>
+  ${b.writes.map((w, k) => { const key = b.id + "-" + k, c = state.writes[key] || 0; return `
+    <div class="wrow"><div><b>${w.what}</b><div class="muted" style="font-size:13px">${w.n} times</div></div>
+    <div class="dots" data-k="${key}" data-n="${w.n}">${Array.from({length:w.n}, (_, j) => `<button class="dot ${j < c ? "on" : ""}" data-j="${j}">${j+1}</button>`).join("")}</div></div>`; }).join("")}
+  </div>
+  <div class="card trick"><h3>🧠 Memory trick</h3><p style="margin:0">${b.trick}</p></div>
+  <div class="card"><h3>✅ Check yourself</h3><p class="muted">Answer in your notebook first, then open the answer.</p>
+  ${b.check.map((c, k) => `<details><summary><b>${k+1}.</b> ${c.q}</summary><div class="ans">${c.a}</div></details>`).join("")}</div>
+  <div class="card row" style="justify-content:space-between">
+    <label class="row" style="gap:8px;cursor:pointer"><input type="checkbox" id="done" ${state.done[b.id] ? "checked" : ""} style="width:20px;height:20px"> <b>Block done</b></label>
+    ${next ? `<button class="btn" id="next">Next: ${next.title} →</button>` : ""}
+  </div>`;
+  document.querySelectorAll(".dots").forEach(d => d.querySelectorAll(".dot").forEach(btn => btn.onclick = () => {
+    const key = d.dataset.k, j = +btn.dataset.j, cur = state.writes[key] || 0;
+    state.writes[key] = (j + 1 === cur) ? j : j + 1;
+    d.querySelectorAll(".dot").forEach((x, xi) => x.classList.toggle("on", xi < state.writes[key]));
+    save();
+  }));
+  $("#done").onchange = e => { state.done[b.id] = e.target.checked; save(); };
+  if (next) $("#next").onclick = () => { state.done[b.id] = true; save(); go(next.id); };
+}
+
+function renderExam(){
+  $("#app").innerHTML = `
+  <div class="card"><h2>Exam day checklist</h2><p class="lead">Read this on the train. Then close everything and trust your notebook.</p></div>
+  <div class="card"><h3>Before you leave</h3><ul><li>Laptop charged + <b>charger</b></li><li>Schoolyear installed, Chrome/Firefox, no VPN</li><li>Know your KdG password</li><li>Be in GR-102 by 08:15</li></ul></div>
+  <div class="card"><h3>For every coding question</h3><ol>
+  <li><b>Read the expected output first.</b> Copy spaces, capitals, full stops exactly.</li>
+  <li><b>Main given?</b> Every <code>new X(...)</code> = a constructor you write. Every <code>x.method()</code> = a method you write. Inside println/if → it returns something.</li>
+  <li>Say <b>"Please Save Good Code Today"</b>: Private · Setters · Getters · Constructors · toString.</li>
+  <li>Write the extra methods.</li>
+  <li>Check: <code>;</code> everywhere · every <code>{</code> has <code>}</code> · <code>this.</code> in setters · Strings with <code>.equals</code> · <code>import</code> at the top.</li></ol></div>
+  <div class="card"><h3>For "what does this print?"</h3><ul>
+  <li>int / int → whole number (7/2 = 3)</li><li>x++ uses old value · ++x uses new value</li><li>"Text" + 2 + 3 → Text23</li><li>String methods don't change the String</li><li>== on Strings compares references → often false</li><li>nextInt(6) → 0..5</li></ul></div>
+  <div class="card"><h3>If you get stuck</h3><p style="margin:0">Write what you <b>can</b>: the class skeleton, the attributes, one setter. Partial code still scores. Move on and come back. Leave 10 minutes at the end to re-read for missing <code>;</code> and <code>}</code>.</p></div>
+  <div class="card trick"><h3>You've got this</h3><p style="margin:0">You wrote it all by hand tonight. That's the exact skill the exam tests. Breathe, read slowly, start with what you know.</p></div>`;
+}
+
+/* ============ START ============ */
+const h = (location.hash || "").replace("#", "");
+go(BLOCKS.some(b => b.id === h) ? h : "start");
+window.addEventListener("hashchange", () => { const v = location.hash.replace("#", ""); if (BLOCKS.some(b => b.id === v)) go(v); });
+</script>
+
+</body>
+</html>
